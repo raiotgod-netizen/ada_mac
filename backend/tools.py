@@ -619,6 +619,19 @@ cancel_task_tool = {
     }
 }
 
+claude_code_tool = {
+    "name": "claude_code",
+    "description": "Invoca Claude Code CLI para tareas de código complejas. Usa esto cuando necesites generación de código avanzada, refactoring, debugging, o revisión. Requiere que Claude Code esté instalado (npm install -g @anthropic-ai/claude-code).",
+    "parameters": {
+        "type": "OBJECT",
+        "properties": {
+            "prompt": {"type": "STRING", "description": "La tarea o instrucción para Claude Code."},
+            "model": {"type": "STRING", "description": "Modelo a usar: 'sonnet' (default) o 'haiku'."}
+        },
+        "required": ["prompt"]
+    }
+}
+
 tools_list = [{"function_declarations": [
     generate_cad_prototype_tool,
     write_file_tool,
