@@ -1,0 +1,38 @@
+{
+  "scripts": [
+    {
+      "name": "example_list_project",
+      "safe_name": "example_list_project",
+      "description": "Lista la raíz del proyecto ADA.",
+      "language": "python",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\custom_scripts\\example_list_project.py"
+    },
+    {
+      "name": "EnviarInformeESMAX_EV2",
+      "safe_name": "EnviarInformeESMAX_EV2",
+      "description": "Envía el informe de la Evaluación 2 como archivo adjunto al correo institucional del Jefe.",
+      "language": "python",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\custom_scripts\\EnviarInformeESMAX_EV2.py",
+      "args_schema": [],
+      "permission_level": "normal"
+    },
+    {
+      "name": "ForceOpenCLAWGateway",
+      "safe_name": "ForceOpenCLAWGateway",
+      "description": "Executes the command sequence to force the opening of the Open CLAW gateway.",
+      "language": "python",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\custom_scripts\\ForceOpenCLAWGateway.py",
+      "args_schema": [],
+      "permission_level": "normal"
+    },
+    {
+      "name": "saludo_puerto_montt",
+      "safe_name": "saludo_puerto_montt",
+      "description": "Muestra el clima y la hora actual en Puerto Montt, Chile, como saludo de inicio.",
+      "language": "python",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\custom_scripts\\saludo_puerto_montt.py",
+      "args_schema": [],
+      "permission_level": "normal"
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "skills": [
+    {
+      "id": "memory",
+      "name": "Memoria persistente",
+      "description": "Gestiona memoria global, runtime memory y contexto persistente.",
+      "scope": "core",
+      "enabled": true
+    },
+    {
+      "id": "desktop",
+      "name": "Control de escritorio",
+      "description": "Automatización local de mouse, teclado, ventanas y archivos.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "vision",
+      "name": "Visión contextual",
+      "description": "Resumen visual, pistas de acción y guía heurística de pantalla.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "email",
+      "name": "Correo Gmail",
+      "description": "Envío de correo, adjuntos y preparación de archivos recientes.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "improvement",
+      "name": "Auto-mejora supervisada",
+      "description": "Análisis, propuesta, validación y aplicación local de mejoras.",
+      "scope": "core",
+      "enabled": true
+    }
+  ],
+  "tools": [
+    {
+      "name": "generate_cad_prototype",
+      "description": "Generates a 3D wireframe prototype based on a user's description. Use this when the user asks to 'visualize', 'prototype', 'create a wireframe', or 'design' something in 3D.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "prompt"
+      ]
+    },
+    {
+      "name": "write_file",
+      "description": "Writes content to a file at the specified path. Overwrites if exists.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "path",
+        "content"
+      ]
+    },
+    {
+      "name": "read_directory",
+      "description": "Lists the contents of a directory.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "path"
+      ]
+    },
+    {
+      "name": "read_file",
+      "description": "Reads the content of a file.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "path"
+      ]
+    },
+    {
+      "name": "open_app",
+      "description": "Opens a locally allowed Windows application like notepad, calculator, explorer or paint.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "app_name"
+      ]
+    },
+    {
+      "name": "run_safe_command",
+      "description": "Runs a local diagnostic or information command on the PC.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "command"
+      ]
+    },
+    {
+      "name": "create_custom_script",
+      "description": "Creates and registers a reusable custom script inside the ADA project.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "name",
+        "description",
+        "content",
+        "language"
+      ]
+    },
+    {
+      "name": "run_custom_script",
+      "description": "Runs a previously registered custom script by name.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "name"
+      ]
+    },
+    {
+      "name": "list_custom_scripts",
+      "description": "Lists available custom scripts registered in ADA.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": []
+    },
+    {
+      "name": "learn_preference",
+      "description": "Stores a user preference or operating preference persistently.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "key",
+        "value"
+      ]
+    },
+    {
+      "name": "learn_rule",
+      "description": "Stores a learned rule or instruction from the user.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "rule_text"
+      ]
+    },
+    {
+      "name": "consolidate_memory",
+      "description": "Consolidates preferences, learned rules and recent journal into a memory summary.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": []
+    },
+    {
+      "name": "create_word_document",
+      "description": "Creates a Word document (.docx) on the PC and saves it inside the current project documents folder.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "body",
+        "filename"
+      ]
+    },
+    {
+      "name": "create_excel_workbook",
+      "description": "Creates an Excel workbook (.xlsx) on the PC and saves it inside the current project documents folder.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "rows_json",
+        "filename",
+        "sheet_name"
+      ]
+    },
+    {
+      "name": "create_powerpoint_presentation",
+      "description": "Creates a PowerPoint presentation (.pptx) on the PC and saves it inside the current project documents folder.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "slides_json",
+        "filename"
+      ]
+    },
+    {
+      "name": "capture_screen_snapshot",
+      "description": "Captures the current screen and saves a PNG snapshot inside the current project screenshots folder.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "filename",
+        "monitor_index"
+      ]
+    },
+    {
+      "name": "observe_system_state",
+      "description": "Inspects the current PC state including open windows, browser windows and visible processes.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": []
+    },
+    {
+      "name": "focus_window",
+      "description": "Focuses a visible window on the PC by title, process name or pid.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "process",
+        "pid"
+      ]
+    },
+    {
+      "name": "close_window",
+      "description": "Closes a window or process on the PC by title, process name or pid. Use only when the user explicitly asks to close something.",
+      "risk": "high",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "process",
+        "pid"
+      ]
+    },
+    {
+      "name": "move_mouse",
+      "description": "Moves the mouse pointer on the desktop to a given screen position.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "x",
+        "y",
+        "duration"
+      ]
+    },
+    {
+      "name": "click_mouse",
+      "description": "Clicks on the desktop or active application. Use only when the user explicitly asks ADA to interact with the PC.",
+      "risk": "high",
+      "enabled": true,
+      "parameters": [
+        "x",
+        "y",
+        "button",
+        "clicks"
+      ]
+    },
+    {
+      "name": "type_text",
+      "description": "Types text into the active application. Use only when the user explicitly asks ADA to write or fill something.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "text",
+        "interval",
+        "press_enter"
+      ]
+    },
+    {
+      "name": "press_hotkey",
+      "description": "Executes a keyboard shortcut like ctrl+l, alt+tab or win+d.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "keys"
+      ]
+    },
+    {
+      "name": "scroll_desktop",
+      "description": "Scrolls in the active application or window.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "clicks"
+      ]
+    },
+    {
+      "name": "open_url",
+      "description": "Opens a URL in the default browser.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "url"
+      ]
+    },
+    {
+      "name": "run_desktop_sequence",
+      "description": "Runs a multi-step desktop automation sequence encoded as JSON. Use only when the user explicitly wants ADA to perform a sequence of UI actions.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "steps_json"
+      ]
+    },
+    {
+      "name": "save_desktop_macro",
+      "description": "Saves a reusable named desktop automation macro in ADA global memory.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "name",
+        "steps_json",
+        "description"
+      ]
+    },
+    {
+      "name": "run_saved_macro",
+      "description": "Runs a previously saved desktop macro by name.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "name"
+      ]
+    },
+    {
+      "name": "list_saved_macros",
+      "description": "Lists reusable desktop macros saved in ADA global memory.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": []
+    },
+    {
+      "name": "propose_self_improvement",
+      "description": "Registers a guided self-improvement proposal for ADA. Use it when the user orders ADA to improve itself in a controlled way.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "goal",
+        "implementation_notes"
+      ]
+    },
+    {
+      "name": "shutdown_pc",
+      "description": "Shuts down the Windows PC. Use ONLY when the user explicitly asks to shut down the computer.",
+      "risk": "high",
+      "enabled": true,
+      "parameters": [
+        "confirm",
+        "delay_seconds"
+      ]
+    },
+    {
+      "name": "send_email",
+      "description": "Sends an email using ADA's configured Gmail account. Use only when the user explicitly asks to send an email.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "to",
+        "subject",
+        "body",
+        "html",
+        "attachments_json"
+      ]
+    },
+    {
+      "name": "download_file",
+      "description": "Downloads a file from the internet to ADA's current project downloads folder. Use only when the user explicitly asks to download a file.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "url",
+        "filename"
+      ]
+    },
+    {
+      "name": "upload_file_to_web",
+      "description": "Uploads a local file to a web endpoint using multipart/form-data. Use only when the user explicitly asks to upload a file.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "file_path",
+        "target_url",
+        "field_name"
+      ]
+    },
+    {
+      "name": "read_local_file",
+      "description": "Reads a supported local file from the PC or project with preview and summary.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "path",
+        "max_chars"
+      ]
+    },
+    {
+      "name": "list_local_files",
+      "description": "Lists local files from a directory or from ADA projects.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "base_path",
+        "limit"
+      ]
+    },
+    {
+      "name": "prepare_email_attachments",
+      "description": "Validates and prepares local files to be used as Gmail attachments.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "paths_json",
+        "max_size_mb"
+      ]
+    },
+    {
+      "name": "suggest_recent_attachments",
+      "description": "Suggests recent project files that are good candidates to attach in Gmail.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "limit"
+      ]
+    },
+    {
+      "name": "open_local_file",
+      "description": "Opens a local file on the PC with its default application.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "path"
+      ]
+    },
+    {
+      "name": "reveal_local_file",
+      "description": "Reveals a local file in Windows Explorer.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "path"
+      ]
+    }
+  ]
+}

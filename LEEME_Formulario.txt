@@ -1,0 +1,60 @@
+ARCHIVOS ENTREGADOS
+===================
+- Formulario_Inscripcion.xlsx  --> Archivo Excel principal (abrelo en Excel)
+- UserForm1.frm                --> Formulario VBA (lo importas en el editor)
+- ModuloVBA.bas                --> Modulo con macros (lo importas en el editor)
+- UserForm1.frx                --> Recursos binarios del formulario
+
+PASOS PARA ACTIVAR EL FORMULARIO
+================================
+1. Abre Formulario_Inscripcion.xlsx en Excel
+
+2. Presiona ALT + F11 para abrir el editor de VBA
+
+3. En el VBA Editor, ve a Archivo > Importar archivo
+   --> Importa UserForm1.frm (primero)
+   --> Importa ModuloVBA.bas
+
+   NOTA: Cuando importes UserForm1.frm, el archivo UserForm1.frx
+         debe estar en la MISMA carpeta para que el formulario
+         cargue correctamente los controles.
+
+4. Cierra el editor VBA (ALT + Q)
+
+5. Asigna la macro al boton:
+   - Ve a Desarrollador > Insertar > Boton (Control de formulario)
+   - Dibuja el boton en la hoja Menu
+   - Asigna la macro "MostrarFormulario"
+   - Cambia el texto del boton a "Abrir Formulario"
+
+6. Habilita macros al abrir el archivo (si Excel lo pide)
+
+COMO USAR
+=========
+1. Haz clic en "Abrir Formulario"
+2. Ingresa Nombre y Apellido
+3. Selecciona un Curso de la lista desplegable
+   --> El precio se muestra automaticamente (BUSCARV)
+4. Haz clic en "Inscribir"
+   --> Los datos van a la hoja "Datos"
+5. Para borrar campos, usa "Limpiar"
+   Para cerrar, usa "Salir"
+
+HOJA "Apoyo" (cursos disponibles)
+================================
+IDCurso      NombreCurso                      Precio
+CUR001       Introduccion a la Programacion    $15,000
+CUR002       Python Avanzado                   $25,000
+CUR003       Excel con Macros                  $18,000
+CUR004       Analisis de Datos con Excel       $22,000
+CUR005       Power BI Fundamentals             $30,000
+CUR006       Machine Learning Basics           $45,000
+CUR007       Base de Datos SQL                  $20,000
+CUR008       Presentaciones Ejecutivas         $12,000
+
+HOJA "Datos" (inscripciones capturadas)
+=======================================
+Columnas: Nombre y Apellido | ID Curso | Precio | Fecha Inscripcion
+
+Agregar mas cursos: Editar la hoja "Apoyo" directamente.
+El formulario los leera automaticamente.

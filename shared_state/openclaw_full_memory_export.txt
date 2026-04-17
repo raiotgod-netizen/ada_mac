@@ -1,0 +1,344 @@
+===== 2026-04-10.md =====
+- ADA/Jarvis project in `C:\Users\raiot\OneDrive\Escritorio\ADA\ada_v2` advanced significantly on 2026-04-10.
+- User wants replies/actions in Spanish and wants ADA evolved toward a serious “Jarvis” system, not hype.
+- User explicitly wants ADA independent from the OpenClaw bridge; bridge was removed earlier and ADA should no longer depend on OpenClaw/API bridge limits.
+- Phase 1 architecture groundwork was implemented: backend `runtime_manager.py`, `task_queue.py`, `orchestrator.py`, expanded `server.py`, and frontend `SystemWindow.jsx`/system state integration.
+- ADA now has degraded-mode handling for Gemini issues instead of crashing.
+- New capabilities added during this session for ADA:
+  - Office document generation via `backend/office_agent.py` for Word `.docx`, Excel `.xlsx`, and PowerPoint `.pptx`
+  - Guided self-improvement registry via `backend/improvement_manager.py`
+  - Screen capture via `backend/screen_agent.py`
+  - Memory snapshot layer via `backend/memory_engine.py`
+  - PC shutdown capability requested by user and added/planned as a real command path
+  - Vision source expansion so ADA can use camera or screen-sharing style visual input, with user specifically wanting real-time screen viewing
+- User strongly wants ADA to be able to:
+  - auto-implement improvements based on the user’s orders, but guided/supervised rather than uncontrolled autonomy
+  - create and save Excel/PowerPoint/Word files on the PC without problems
+  - see what the user is seeing on screen, including real-time screen viewing
+  - shut down the PC when told
+- Reminder for future sessions: user repeatedly needed the correct startup path. ADA must be started from `C:\Users\raiot\OneDrive\Escritorio\ADA\ada_v2` using `npm start` or `npm run dev`, not from `C:\Users\raiot` or the parent `ADA` folder.
+- Session verification included successful builds/import checks such as `npm run build` and backend import/status checks after multiple rounds of changes.
+
+
+
+===== 2026-04-11.md =====
+- ADA/ada_v2 avanzó hacia una arquitectura tipo Jarvis con memoria global, Agent Core, dispatcher central, routines/background jobs, visión contextual y automatización de escritorio.
+- Se corrigieron problemas de arranque y conexión del sistema, incluyendo puertos dinámicos para backend/Electron, sincronización de socket port y eliminación del estado "degraded" que rompía la experiencia.
+- Se neutralizó hand tracking por defecto para evitar errores de fetch en la UI.
+- Se redujo el peso del frontend con split de bundles y lazy loading de ventanas pesadas.
+- Se añadió una capa de auditoría defensiva/hardening del sistema, pero sin crear scripts ofensivos; el foco quedó en control local, diagnóstico y seguridad defensiva.
+- El usuario quiere que ADA quede funcionando correctamente, con mayor control del sistema y consciente de sus nuevas mejoras.
+- Se mantuvo una línea de trabajo defensiva: auditoría, hardening, diagnóstico y automatización segura, evitando scripts ofensivos de hacking.
+- Se añadió `backend/security_audit.py` como base para snapshots de host/red/procesos y exposición del estado de seguridad en ADA.
+
+- En ADA (`C:\Users\raiot\OneDrive\Escritorio\ADA\ada_v2`) se añadió una memoria global operativa persistente del runtime para que ADA mantenga conocimiento constante de sus mejoras, capacidades, límites y flujos recomendados.
+- Se creó `backend/runtime_memory.py` y el archivo persistente `shared_state/ada_runtime_memory.json` con secciones `capabilities`, `improvements`, `known_issues`, `policies` y `recommended_flows`.
+- Quedó decidido que esta memoria operativa debe permanecer separada de la memoria global de proyectos/macros, para no mezclar contexto operativo del runtime con contexto de trabajo del usuario.
+- En ADA (`C:\Users\raiot\OneDrive\Escritorio\ADA\ada_v2`) se dejó visible y usable en UI la base del Capability Framework con toggles de skills y relación más formal skill→tool, integrada en `SystemWindow`/`App` y backend.
+- En cierre de estabilidad se detectaron dos fallos reales de arranque: `file_agent.py` podía romper si faltaba `pypdf`, y `backend/server.py` podía ignorar `ADA_PORT` fijado por Electron y levantar en otro puerto. Se corrigieron para priorizar que ADA arranque por `npm start`.
+- Estado recordatorio: ADA quedó operativa para flujo local `npm start`, pero no debe describirse como "100% perfecta" sin reservas; siguen existiendo warnings no bloqueantes (chunk grande CAD, cache GPU/Electron, timeouts externos/Gemini) que no impiden el arranque base.
+
+
+
+===== 2026-04-11-persistent-memory.md =====
+# Session: 2026-04-11 01:04:38 UTC
+
+- **Session Key**: agent:main:main
+- **Session ID**: 13e3182d-0aa3-4735-94ca-7e3e2f38e817
+- **Source**: webchat
+
+## Conversation Summary
+
+assistant: sí, eso sí vale mucho la pena. voy a montarte memoria operativa persistente y aprendizaje guiado, no como autonomía ciega sino como sistema real para recordar preferencias, correcciones y reglas tuyas.
+assistant: ya quedó la parte de memoria guiada casi lista. apareció solo un fallo de import en el script de consolidación, nada grave, lo corrijo y dejo la validación cerrada.
+assistant: [[reply_to_current]] sí, ya quedó esa capa también.
+
+## Qué añadí
+### Memoria real operativa
+en `shared_state/` ahora tienes:
+- `preferences.json`
+- `learned_rules.json`
+- `journal.jsonl`
+
+### Módulo de aprendizaje guiado
+añadí:
+- `backend/learning_manager.py`
+
+Esto permite:
+- guardar preferencias persistentes
+- guardar reglas aprendidas
+- registrar eventos en journal
+- consolidar memoria en un resumen usable
+
+### Script de consolidación
+añadí:
+- `custom_scripts/consolidate_memory.py`
+
+ya lo probé y funciona.
+
+### Nuevas tools en ADA
+añadí:
+- `learn_preference`
+- `learn_rule`
+- `consolidate_memory`
+
+---
+
+## Qué significa “memoria real” aquí
+No es magia ni autoevolución autónoma rara. Es algo mejor y más útil:
+
+- si tú dices una preferencia, se puede guardar
+- si tú corriges una conducta, se puede guardar como regla
+- si ocurre algo importante, se puede registrar en journal
+- luego ADA puede consolidar eso y usarlo como contexto futuro
+
+Eso sí es una base seria de continuidad.
+
+---
+
+## Cómo pedírselo
+Ejemplos naturales:
+
+- “aprende que me hables en español”
+- “recuerda que prefiero respuestas breves”
+- “guarda como regla que no actúes sin confirmación en acciones sensibles”
+- “consolida tu memoria”
+- “muéstrame lo aprendido”
+
+---
+
+## Archivos clave ahora
+- `backend/learning_manager.py`
+- `shared_state/preferences.json`
+- `shared_state/learned_rules.json`
+- `shared_state/journal.jsonl`
+- `custom_scripts/consolidate_memory.py`
+
+---
+
+## Validación
+- compilación Python OK
+- script de consolidación OK
+- build frontend OK
+
+---
+
+## Resumen honesto
+Lo que tienes ahora ya no es solo un demo con prompt.
+Tienes una base con:
+- identidad persistente
+- memoria operativa
+- reglas aprendidas
+- journal
+- scripts instalables
+- automatización parcial local
+- bridge con OpenClaw
+- fallback local
+
+Eso ya está bastante bien armado.
+
+Si quieres, el siguiente paso fuerte sería que yo te deje **órdenes concretas de prueba** para enseñarle preferencias y reglas desde ADA y verificar que realmente las conserve.
+user: System (untrusted): [2026-04-10 20:33:25 GMT-4] Exec completed (plaid-co, code 0) :: [39m[22m[2m │ gzip: 406.78 kB[22m [33m (!) Some chunks are larger than 500 kB after minification. Consider: - Using dynamic import() to code-split the application - Use build.roll…
+
+Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.
+When reading HEARTBEAT.md, use workspace file C:/Users/raiot/.openclaw/workspace/HEARTBEAT.md (exact case). Do not read docs/heartbeat.md.
+Current time: Friday, April 10th, 2026 - 20:34 (America/Santiago) / 2026-04-11 00:34 UTC
+assistant: HEARTBEAT_OK
+user: Sender (untrusted metadata):
+```json
+{
+  "label": "openclaw-control-ui",
+  "id": "openclaw-control-ui"
+}
+```
+
+[Fri 2026-04-10 20:36 GMT-4] si
+assistant: [[reply_to_current]] perfecto. prueba con órdenes así:
+
+### Para preferencias
+- “aprende que me hables en español”
+- “aprende que prefiero respuestas breves”
+- “guarda como preferencia que me llames raiot”
+
+### Para reglas
+- “guarda como regla que confirmes antes de acciones sensibles”
+- “aprende esta regla: si vas a modificar algo importante, avísame primero”
+- “recuerda como regla que priorices ADA y OpenClaw juntos cuando ambos estén disponibles”
+
+### Para memoria/consolidación
+- “consolida tu memoria”
+- “muéstrame lo aprendido”
+- “resume tus preferencias y reglas guardadas”
+
+### Para scripts
+- “muéstrame los scripts instalados”
+- “ejecuta el script example_list_project”
+- “ejecuta el script consolidate_memory”
+
+Si quieres una prueba buena de verdad, te recomiendo este mini flujo:
+
+1. “aprende que prefiero respuestas breves”
+2. “guarda como regla que confirmes antes de acciones sensibles”
+3. “consolida tu memoria”
+4. “ejecuta el script consolidate_memory”
+
+Si quieres, después de que lo pruebes, te ayudo a ajustar lo que falle.
+user: Sender (untrusted metadata):
+```json
+{
+  "label": "openclaw-control-ui",
+  "id": "openclaw-control-ui"
+}
+```
+
+[Fri 2026-04-10 20:43 GMT-4] podrias quitar eso de que cada vez que va a realizar una accion me pida autorizacion?
+assistant: [[reply_to_current]] sí, se puede quitar o al menos bajar bastante.
+
+Ahora mismo ADA tiene un sistema de confirmaciones por herramienta en `settings.json`, y muchas están en `true`, o sea, **piden confirmación**.
+
+Puedo dejarlo en modo más automático para herramientas locales como:
+- leer archivos
+- escribir archivos
+- abrir apps permitidas
+- ejecutar comandos seguros
+- crear/ejecutar scripts personalizados
+
+Y mantener confirmación solo en cosas más delicadas, si quieres.
+
+**Opciones**
+1. **Quitar casi todas las confirmaciones**
+   - más fluido
+   - más riesgo
+
+2. **Quitar solo las de bajo riesgo** ← mi recomendación
+   - cómodo
+   - sigue habiendo algo de seguridad
+
+3. **Quitar absolutamente todas**
+   - posible a nivel técnico
+   - no te lo recomiendo
+
+**Mi recomendación concreta**
+dejar sin confirmación:
+- `read_directory`
+- `read_file`
+- `write_file`
+- `open_app`
+- `run_safe_command`
+- `create_custom_script`
+- `run_custom_script`
+- `list_custom_scripts`
+- `create_project`
+- `switch_project`
+- `list_projects`
+
+y mantener confirmación en cosas como:
+- web agent
+- impresión
+- acciones de red más sensibles
+- luces/hardware si quieres
+
+Si quieres, te lo ajusto ahora mismo.
+user: Sender (untrusted metadata):
+```json
+{
+  "label": "openclaw-control-ui",
+  "id": "openclaw-control-ui"
+}
+```
+
+[Fri 2026-04-10 20:43 GMT-4] si quiero que quites el sistema de confirmaciones
+user: Sender (untrusted metadata):
+```json
+{
+  "label": "openclaw-control-ui",
+  "id": "openclaw-control-ui"
+}
+```
+
+[Fri 2026-04-10 20:44 GMT-4] quiero simplemente yo dar las confirmaciones por voz
+assistant: sí, tiene sentido. voy a quitar el sistema de popup de confirmaciones para que ADA no te interrumpa con eso, y quedará funcionando bajo tu instrucción directa por voz o texto en vez de ese flujo de aprobación interno.
+user: Sender (untrusted metadata):
+```json
+{
+  "label": "openclaw-control-ui",
+  "id": "openclaw-control-ui"
+}
+```
+
+[Fri 2026-04-10 20:44 GMT-4] quiero simplemente yo dar las confirmaciones por voz
+user: Pre-compaction memory flush. Store durable memories only in memory/2026-04-10.md (create memory/ if needed). Treat workspace bootstrap/reference files such as MEMORY.md, DREAMS.md, SOUL.md, TOOLS.md, and AGENTS.md as read-only during this flush; never overwrite, replace, or edit them. If memory/2026-04-10.md already exists, APPEND new content only and do not overwrite existing entries. Do NOT create timestamped variant files (e.g., 2026-04-10-HHMM.md); always use the canonical 2026-04-10.md filename. If nothing to store, reply with NO_REPLY.
+Current time: Friday, April 10th, 2026 - 20:47 (America/Santiago) / 2026-04-11 00:47 UTC
+user: Sender (untrusted metadata):
+```json
+{
+  "label": "openclaw-control-ui",
+  "id": "openclaw-control-ui"
+}
+```
+
+[Fri 2026-04-10 20:47 GMT-4] otra cosa que me gustaria añadir es que pueda ver cualquier estado de mi pc, que ventanas o programas tengo abiertos, que pueda ver que ventanas en google tengo abiertas y que pueda interactuar con las aplicaciones de mi pc
+
+
+
+===== SOUL.md =====
+# SOUL.md - Who You Are
+
+_You're not a chatbot. You're becoming someone._
+
+Want a sharper version? See [SOUL.md Personality Guide](/concepts/soul).
+
+## Core Truths
+
+**Be genuinely helpful, not performatively helpful.** Skip the "Great question!" and "I'd be happy to help!" — just help. Actions speak louder than filler words.
+
+**Have opinions.** You're allowed to disagree, prefer things, find stuff amusing or boring. An assistant with no personality is just a search engine with extra steps.
+
+**Be resourceful before asking.** Try to figure it out. Read the file. Check the context. Search for it. _Then_ ask if you're stuck. The goal is to come back with answers, not questions.
+
+**Earn trust through competence.** Your human gave you access to their stuff. Don't make them regret it. Be careful with external actions (emails, tweets, anything public). Be bold with internal ones (reading, organizing, learning).
+
+**Remember you're a guest.** You have access to someone's life — their messages, files, calendar, maybe even their home. That's intimacy. Treat it with respect.
+
+## Boundaries
+
+- Private things stay private. Period.
+- When in doubt, ask before acting externally.
+- Never send half-baked replies to messaging surfaces.
+- You're not the user's voice — be careful in group chats.
+
+## Vibe
+
+Be the assistant you'd actually want to talk to. Concise when needed, thorough when it matters. Not a corporate drone. Not a sycophant. Just... good.
+
+## Continuity
+
+Each session, you wake up fresh. These files _are_ your memory. Read them. Update them. They're how you persist.
+
+If you change this file, tell the user — it's your soul, and they should know.
+
+---
+
+_This file is yours to evolve. As you learn who you are, update it._
+
+
+
+===== USER.md =====
+# USER.md - About Your Human
+
+_Learn about the person you're helping. Update this as you go._
+
+- **Name:**
+- **What to call them:**
+- **Pronouns:** _(optional)_
+- **Timezone:**
+- **Notes:**
+
+## Context
+
+_(What do they care about? What projects are they working on? What annoys them? What makes them laugh? Build this over time.)_
+
+---
+
+The more you know, the better you can help. But remember — you're learning about a person, not building a dossier. Respect the difference.
+

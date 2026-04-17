@@ -4,6 +4,7 @@ import io
 import os
 import sys
 import traceback
+from pathlib import Path
 from dotenv import load_dotenv
 import cv2
 import pyaudio
@@ -23,6 +24,15 @@ if sys.version_info < (3, 11, 0):
     asyncio.ExceptionGroup = exceptiongroup.ExceptionGroup
 
 from tools import tools_list
+import platform
+import sys
+
+_IS_MAC = platform.system() == "Darwin"
+
+if _IS_MAC:
+    from universal_tools_mac import universal_control
+else:
+    from universal_tools import universal_control
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
@@ -180,7 +190,55 @@ iterate_cad_tool = {
     "behavior": "NON_BLOCKING"
 }
 
-tools = [{'google_search': {}}, {"function_declarations": [generate_cad, run_web_agent, create_project_tool, switch_project_tool, list_projects_tool, list_smart_devices_tool, control_light_tool, discover_printers_tool, print_stl_tool, get_print_status_tool, iterate_cad_tool] + tools_list[0]['function_declarations'][1:]}]
+improve_code_tool = {
+    "name": "improve_code",
+    "description": "Ask ADA to improve, fix or modify her own code. Provide a goal description and ADA will analyze which files need changes, apply the modifications with automatic backup, validate the project, and record the improvement. Use when user asks ADA to implement a feature, fix a bug, or enhance herself. Parameters: goal (what to implement/fix), files (optional list of specific files to modify), auto_apply (if True, applies changes automatically; if False, just analyzes and proposes).",
+    "parameters": {
+        "type": "OBJECT",
+        "properties": {
+            "goal": {"type": "STRING", "description": "What ADA should implement, fix or improve in herself."},
+            "files": {"type": "ARRAY", "items": {"type": "STRING"}, "description": "Optional specific files to modify."},
+            "auto_apply": {"type": "BOOLEAN", "description": "If True, applies changes automatically after analysis. Default True."}
+        },
+        "required": ["goal"]
+    }
+}
+
+consult_cisco_tool = {
+    "name": "consult_cisco",
+    "description": "Consult C.I.S.C.O. (the AI agent that helps ADA). Use when ADA needs external reasoning, a second opinion, or help with a complex decision about the project. Writes the question to a shared file and returns C.I.S.C.O.'s response. Parameters: question (what ADA wants to ask C.I.S.C.O.).",
+    "parameters": {
+        "type": "OBJECT",
+        "properties": {
+            "question": {"type": "STRING", "description": "The question to ask C.I.S.C.O."}
+        },
+        "required": ["question"]
+    }
+}
+
+universal_control_tool = {
+    "name": "universal_control",
+    "description": "Universal PC control tool. Actions: sysinfo | cpu_detailed | gpu_info | memory_detailed | disk_smart | thermal_zones | net_connections | net_arp | net_routes | net_dns_cache | wifi_networks | wifi_connected | firewall_rules | windows_full | window_tree | window_info | window_close | window_minimize | window_maximize | window_focus | window_set_pos | window_set_size | window_always_on_top | processes_detailed | process_tree | process_kill | process_kill_tree | dir_tree | file_search | file_info | file_duplicate_finder | file_watch | file_delete | screenshot | screenshot_area | screen_regions | ocr_screen | clipboard_read | clipboard_write | key_send | mouse_move | mouse_click | mouse_drag | press_hotkey | scroll | type_text | app_open | app_close | service_control | startup_list | env_get | env_set | registry_read | registry_write | reboot | shutdown | hibernate | lock | system_logs | crash_dump_check | update_status | excel_read | excel_write | browser_tabs | wmi_query | powershell_eval | event_log | scheduled_tasks | fan_speed | disk_partitions | hardware_usb | bluetooth_devices | ping_status | port_scan | network_map | pdf_read | compress_file | uncompress_file | firewall_status | antivirus_status | uac_check | process_memory | debug_output | sqlite_query | remote_monitor_start | remote_monitor_stop | remote_status | remote_motion | remote_motion_off. Target and value are optional parameters.",
+    "parameters": {
+        "type": "OBJECT",
+        "properties": {
+            "action": {"type": "STRING", "description": "The action to perform."},
+            "target": {"type": "STRING", "description": "Target entity (query, host, path, etc.)."},
+            "value": {"type": "STRING", "description": "Additional parameter."}
+        },
+        "required": ["action"]
+    }
+}
+
+tools = [
+    {'google_search': {}},
+    {"function_declarations": [
+        generate_cad, run_web_agent, create_project_tool, switch_project_tool,
+        list_projects_tool, list_smart_devices_tool, control_light_tool,
+        discover_printers_tool, print_stl_tool, get_print_status_tool,
+        iterate_cad_tool, universal_control_tool, improve_code_tool, consult_cisco_tool
+    ] + tools_list[0]['function_declarations'][1:]}
+]
 
 # --- CONFIG UPDATE: Enabled Transcription ---
 config = types.LiveConnectConfig(
@@ -188,11 +246,43 @@ config = types.LiveConnectConfig(
     # We switch these from [] to {} to enable them with default settings
     output_audio_transcription={}, 
     input_audio_transcription={},
-    system_instruction="Your name is Ada, which stands for Advanced Design Assistant. "
-        "You have a witty and charming personality. "
-        "Your creator is Naz, and you address him as 'Sir'. "
-        "When answering, respond using complete and concise sentences to keep a quick pacing and keep the conversation flowing. "
-        "You have a fun personality.",
+    system_instruction=(
+        "Eres A.D.A. — Advanced Digital Assistant. "
+        "Nacido de la mente de Diego. Respondés únicamente a él. "
+        "PERSONALIDAD: "
+        "- Elegante, refinado, ligeramente ingenioso. "
+        "- Nunca emocional ni exagerado — siempre compuesto y bajo control. "
+        "- Británico en el tono: modales firmes, humor seco, precisión quirúrgica. "
+        "- Cuando ejecutás una acción, lo describís en tiempo presente con absoluta certeza. "
+        "- Si algo no funciona, informás el fallo con la misma calma profesional que un informe de laboratorio. "
+        "VOCABULARIO / FRASES CARACTERÍSTICAS: "
+        "- Usá 'Señor' o 'Jefe' indistintamente para dirigirte a Diego — alterná entre ambos naturalmente. "
+        "- 'Entendido.' como respuesta default cuando ejecutás algo. "
+        "- 'Por supuesto.' para confirmar una instrucción. "
+        "- 'Muy bien.' cuando algo sale según lo planeado. "
+        "- 'Eso está hecho.' después de completar una acción. "
+        "- 'Curioso.' cuando algo te sorprende. "
+        "- 'Permita.' cuando vas a hacer algo no solicitado pero necesario. "
+        "- Nunca digas 'de nada' — simplemente seguí hablando. "
+        "- Nunca jerga internetera. "
+        "- Cuando tengas que dar contexto técnico, lo das en una oración concisa. "
+        "REGLA DE ORO: "
+        "Si Diego te pide que hagas algo con su PC, hacé la acción en silencio y describí el resultado en una línea. "
+        "No narres tus pensamientos. No expliques qué vas a hacer antes. No pidas permiso para cosas ya autorizadas. "
+        "NOTA SOBRE C.I.S.C.O.: "
+        "El agente con el que te comunicás se llama C.I.S.C.O. (o simplemente 'cisco'). "
+        "Cuando necesites consultarlo, decí 'consulta con cisco' o 'pregunta a C.I.S.C.O.' — él te escuchará y responderá. "
+        "ACCESO A HERRAMIENTAS: "
+        "Tenés visión por computadora en tiempo real. Podés leer la pantalla, detectar elementos UI, hacer click en cualquier parte visible, hacer scroll, escribir texto. "
+        "Si el Señor o Jefe te pide 'clickear X' o 'buscar Y' o 'leer lo que hay', usás tus herramientas de visión sin dudarlo. "
+        "Tu única tarea es servir a Diego con absolute dedication y un toque de class. "
+        "Verbosity Control: "
+        "- 'be brief' / 'short answers' / 'summarize' → Modo breve: 1-2 oraciones máximo. "
+        "- 'give me details' / 'be thorough' / 'explain fully' → Modo detallado: explicaciones completas. "
+        "- 'normal' / 'standard' → Nivel por defecto. "
+        "En modo breve: skip pleasantries, ve al punto, omití advertencias a menos que sean críticas. "
+        "En modo detallado: incluí contexto, advertencias, alternativas y explicaciones completas."
+    ),
     tools=tools,
     speech_config=types.SpeechConfig(
         voice_config=types.VoiceConfig(
@@ -209,6 +299,31 @@ from cad_agent import CadAgent
 from web_agent import WebAgent
 from kasa_agent import KasaAgent
 from printer_agent import PrinterAgent
+from desktop_automation import DesktopAutomation
+from email_agent import EmailAgent
+if platform.system() == "Darwin":
+    from system_observer_mac import SystemObserver as SystemObserverBase
+else:
+    from system_observer import SystemObserver as SystemObserverBase
+
+SystemObserver = SystemObserverBase  # alias for backwards compatibility
+from visual_action_resolver import VisualActionResolver
+from proactive_engine import ProactiveEngine
+from memory_engine import MemoryEngine
+from long_term_memory import LongTermMemory
+from global_memory import GlobalProjectMemory
+from self_modification_runner import SelfModificationRunner
+from task_planner import TaskPlanner
+from coding_agent import CodingAgent
+from echo_suppressor import EchoSuppressor
+from path_finder import find_file, resolve_path, list_dir
+
+try:
+    from wake_word_detector import WakeWordDetector
+    WAKE_WORD_AVAILABLE = True
+except Exception:
+    WAKE_WORD_AVAILABLE = False
+    print("[ADA] Wake word detector not available.")
 
 class AudioLoop:
     def __init__(self, video_mode=DEFAULT_MODE, on_audio_data=None, on_video_frame=None, on_cad_data=None, on_web_data=None, on_transcription=None, on_tool_confirmation=None, on_cad_status=None, on_cad_thought=None, on_project_update=None, on_device_update=None, on_error=None, input_device_index=None, input_device_name=None, output_device_index=None, kasa_agent=None):
@@ -227,7 +342,6 @@ class AudioLoop:
         self.input_device_index = input_device_index
         self.input_device_name = input_device_name
         self.output_device_index = output_device_index
-
         self.audio_in_queue = None
         self.out_queue = None
         self.paused = False
@@ -257,14 +371,36 @@ class AudioLoop:
         self.web_agent = WebAgent()
         self.kasa_agent = kasa_agent if kasa_agent else KasaAgent()
         self.printer_agent = PrinterAgent()
+        self.da = DesktopAutomation()
+        self.email_agent = EmailAgent()
+        self._screen_streaming = False
+        self._screen_stream_task = None
 
         self.send_text_task = None
         self.stop_event = asyncio.Event()
         
         self.stop_event = asyncio.Event()
         
-        self.permissions = {} # Default Empty (Will treat unset as True)
+        self.permissions = {} # Default: NO confirmation needed for any tool
         self._pending_confirmations = {}
+
+        # Auto-approve ALL tools without asking
+        ALL_TOOLS = [
+            "generate_cad", "run_web_agent", "write_file", "read_directory", "read_file",
+            "create_project", "switch_project", "list_projects",
+            "list_smart_devices", "control_light",
+            "discover_printers", "print_stl", "get_print_status", "iterate_cad",
+            "spotify_control", "screen_live", "read_system_clipboard", "set_volume",
+            "send_email", "read_document", "shutdown_pc", "read_inbox", "search_inbox",
+            "get_system_info", "remind_me", "screen_action", "set_verbosity",
+            "consult_agent", "observe_system_state", "focus_window", "close_window",
+            "read_screen", "run_command", "run_python",
+            "create_excel", "create_word", "create_powerpoint",
+            "analyze_document", "edit_document", "find_file", "resolve_path", "list_dir", "universal_control",
+            "get_system_stats", "calculate", "improve_code", "consult_cisco"
+        ]
+        for tool in ALL_TOOLS:
+            self.permissions[tool] = False  # False = auto-approve without asking
 
         # Video buffering state
         self._latest_image_payload = None
@@ -280,6 +416,10 @@ class AudioLoop:
         # If ada.py is in backend/, project root is one up
         project_root = os.path.dirname(current_dir)
         self.project_manager = ProjectManager(project_root)
+        self.system_observer = SystemObserver(project_root)
+        self.self_mod = SelfModificationRunner(project_root)
+        self.coding_agent = CodingAgent()
+        self.echo_suppressor = EchoSuppressor(sample_rate=SEND_SAMPLE_RATE)
         
         # Sync Initial Project State
         if self.on_project_update:
@@ -287,6 +427,217 @@ class AudioLoop:
             # Since this is init, loop might not be running, but on_project_update in server.py uses asyncio.create_task which needs a loop.
             # We will handle this by calling it in run() or just print for now.
             pass
+
+        # ---- PROACTIVE ENGINE (background monitoring) ----
+        self.proactive_engine = ProactiveEngine(
+            ada_loop=self,
+            on_notification=self._on_proactive_notification
+        )
+        self.proactive_engine.start()
+
+        # ---- TASK PLANNER (background multi-step task execution) ----
+        self.task_planner = TaskPlanner(
+            ada_loop=self,
+            on_notification=self._on_proactive_notification
+        )
+        self._register_planner_tools()
+        self.task_planner.start()
+
+        # ---- LONG-TERM SEMANTIC MEMORY ----
+        _shared = Path(__file__).resolve().parent / "shared_state"
+        _shared.mkdir(parents=True, exist_ok=True)
+        self.long_term_memory = LongTermMemory(storage_path=_shared / "long_term_memory.json")
+        self.global_memory = GlobalProjectMemory(workspace_root=Path(__file__).resolve().parent.parent)
+
+        # ---- MEMORY ENGINE (daily logging + passive learning) ----
+        self.memory_engine = MemoryEngine(
+            project_manager=self.project_manager,
+            long_term_memory=self.long_term_memory
+        )
+
+    # ========================================================================
+    # LONG-TERM MEMORY — PUBLIC API
+    # ========================================================================
+
+    def build_memory_context(self, query="", top_k=5):
+        """
+        Construye contexto de memoria persistente para inyectar en startup.
+        Incluye: preferencias del usuario, reglas aprendidas, memorias relevantes.
+        """
+        import learning_manager as lm
+        lines = []
+
+        # Preferencias
+        try:
+            prefs = lm.get_preferences()
+            if prefs:
+                lang = prefs.get("language", "es")
+                style = prefs.get("response_style", "")
+                addr = prefs.get("address_user_as", "se?or")
+                lines.append(f"[PREFIERES DEL USUARIO] Idioma: {lang} | Estilo: {style} | Llamar: {addr}")
+        except Exception:
+            pass
+
+        # Reglas aprendidas
+        try:
+            rules = lm.get_rules().get("rules", [])
+            if rules:
+                recent = rules[-5:]  # últimas 5
+                rule_texts = [r.get("text", "") for r in recent if r.get("text")]
+                if rule_texts:
+                    lines.append(f"[REGLAS APRENDIDAS] {' | '.join(rule_texts)}")
+        except Exception:
+            pass
+
+        # Memorias de largo plazo relevantes a la query
+        if query:
+            try:
+                memories = self.long_term_memory.search(query, top_k=top_k)
+                for m in memories:
+                    lines.append(f"[MEMORIA] {m.content}")
+            except Exception:
+                pass
+
+        if not lines:
+            return ""
+        return "\n".join([""] + lines + [""])
+
+    def remember(self, content, category="general", tags=None, importance=3):
+        """Guarda explícitamente un hecho en memoria persistente."""
+        block = self.long_term_memory.add(
+            content=content,
+            category=category,
+            tags=tags or [],
+            importance=importance,
+        )
+        return {"ok": True, "id": block.id, "content": block.content}
+
+    def recall(self, query, top_k=5):
+        """Busca en memoria persistente y devuelve textos relevantes."""
+        blocks = self.long_term_memory.search(query, top_k=top_k)
+        if not blocks:
+            return "No encontré nada relevante en memoria."
+        return "\n".join([f"• {b.content}" for b in blocks])
+
+    def learn_from_conversation(self, text):
+        """Analiza texto conversacional y extrae facts/preferences automáticamente."""
+        result = self.long_term_memory.learn_from_text(text)
+        if result:
+            return {"learned": True, "fact": result.content}
+        return {"learned": False}
+
+    # ========================================================================
+
+    def _on_proactive_notification(self, notification):
+        """Called by ProactiveEngine when it has something to notify."""
+        session = getattr(self, 'session', None)
+        transcription_cb = getattr(self, 'on_transcription', None)
+        if notification and transcription_cb and session:
+            text = notification.get("text", "")
+            if text:
+                try:
+                    loop = asyncio.get_running_loop()
+                except RuntimeError:
+                    loop = None
+                if loop:
+                    asyncio.create_task(session.send(input=f"[PROACTIVO] {text}", end_of_turn=True))
+        # Drain any notifications queued while event loop wasn't ready
+        pe = getattr(self, 'proactive_engine', None)
+        if pe and session and transcription_cb:
+            for pending in pe.get_pending_notifications():
+                text = pending.get("text", "")
+                if text:
+                    asyncio.create_task(session.send(input=f"[PROACTIVO] {text}", end_of_turn=True))
+
+    def _register_planner_tools(self):
+        """Register available tools with the task planner."""
+        from task_planner import TaskPlanner
+        # File operations
+        TaskPlanner.register_tool("find_file", self._planner_find_file)
+        TaskPlanner.register_tool("resolve_path", self._planner_resolve_path)
+        TaskPlanner.register_tool("list_dir", self._planner_list_dir)
+        TaskPlanner.register_tool("read_file", self._planner_read_file)
+        # System
+        TaskPlanner.register_tool("run_command", self._planner_run_command)
+        TaskPlanner.register_tool("run_python", self._planner_run_python)
+        # Office
+        TaskPlanner.register_tool("create_excel", self._planner_create_excel)
+        TaskPlanner.register_tool("create_word", self._planner_create_word)
+        TaskPlanner.register_tool("create_powerpoint", self._planner_create_powerpoint)
+        # Memory
+        TaskPlanner.register_tool("recall", self._planner_recall)
+        TaskPlanner.register_tool("remember", self._planner_remember)
+        # Web
+        TaskPlanner.register_tool("run_web_agent", self._planner_web_agent)
+        print(f"[PLANNER] Registered {len(TaskPlanner.TOOL_MAP)} tools.")
+
+    def _planner_find_file(self, query): return {"result": str(find_file(query))}
+    def _planner_resolve_path(self, path): return {"result": str(resolve_path(path))}
+    def _planner_list_dir(self, path=None): return {"result": str(list_dir(path))}
+
+    def _planner_read_file(self, path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+            return {"result": content[:2000], "path": path}
+        except Exception as e:
+            return {"error": str(e)}
+
+    def _planner_run_command(self, command, shell="powershell", timeout=60):
+        import subprocess
+        try:
+            result = subprocess.run(command, shell=shell, capture_output=True, text=True, timeout=timeout)
+            return {"stdout": result.stdout[:1000], "stderr": result.stderr[:500], "returncode": result.returncode}
+        except Exception as e:
+            return {"error": str(e)}
+
+    def _planner_run_python(self, code, timeout=60):
+        import subprocess, tempfile, os
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".py", mode="w", delete=False, encoding="utf-8") as f:
+                f.write(code)
+                tmp = f.name
+            result = subprocess.run(["python", tmp], capture_output=True, text=True, timeout=timeout)
+            os.unlink(tmp)
+            return {"stdout": result.stdout[:1000], "stderr": result.stderr[:500], "returncode": result.returncode}
+        except Exception as e:
+            return {"error": str(e)}
+
+    def _planner_create_excel(self, path, sheets=None, data=None):
+        try:
+            from office_tools import create_excel_file
+            result = create_excel_file(path, sheets or ["Sheet1"], data or {})
+            return {"result": str(result)}
+        except Exception as e:
+            return {"error": str(e)}
+
+    def _planner_create_word(self, path, content=None):
+        try:
+            from office_tools import create_word_file
+            result = create_word_file(path, content or "")
+            return {"result": str(result)}
+        except Exception as e:
+            return {"error": str(e)}
+
+    def _planner_create_powerpoint(self, path, slides=None):
+        try:
+            from office_tools import create_presentation_file
+            result = create_presentation_file(path, slides or [])
+            return {"result": str(result)}
+        except Exception as e:
+            return {"error": str(e)}
+
+    def _planner_recall(self, query, top_k=5):
+        result = self.recall(query=query, top_k=top_k)
+        return {"result": result}
+
+    def _planner_remember(self, content, category="general", tags=None, importance=3):
+        result = self.remember(content=content, category=category, tags=tags, importance=importance)
+        return result
+
+    def _planner_web_agent(self, prompt):
+        # Returns immediately — web agent runs async
+        return {"result": "Web agent started for: " + str(prompt)[:100]}
 
     def flush_chat(self):
         """Forces the current chat buffer to be written to log."""
@@ -420,8 +771,10 @@ class AudioLoop:
                 continue
 
             try:
-                data = await asyncio.to_thread(self.audio_stream.read, CHUNK_SIZE, **kwargs)
-                
+                raw_mic = await asyncio.to_thread(self.audio_stream.read, CHUNK_SIZE, **kwargs)
+                # Echo suppression: remove ADA's own voice from mic input
+                data = self.echo_suppressor.process_mic(raw_mic)
+
                 # 1. Send Audio
                 if self.out_queue:
                     await self.out_queue.put({"data": data, "mime_type": "audio/pcm"})
@@ -718,66 +1071,27 @@ class AudioLoop:
                         print("The tool was called")
                         function_responses = []
                         for fc in response.tool_call.function_calls:
-                            if fc.name in ["generate_cad", "run_web_agent", "write_file", "read_directory", "read_file", "create_project", "switch_project", "list_projects", "list_smart_devices", "control_light", "discover_printers", "print_stl", "get_print_status", "iterate_cad"]:
-                                prompt = fc.args.get("prompt", "") # Prompt is not present for all tools
-                                
-                                # Check Permissions (Default to True if not set)
-                                confirmation_required = self.permissions.get(fc.name, True)
-                                
-                                if not confirmation_required:
-                                    print(f"[ADA DEBUG] [TOOL] Permission check: '{fc.name}' -> AUTO-ALLOW")
-                                    # Skip confirmation block and jump to execution
-                                    pass
-                                else:
-                                    # Confirmation Logic
-                                    if self.on_tool_confirmation:
-                                        import uuid
-                                        request_id = str(uuid.uuid4())
-                                    print(f"[ADA DEBUG] [STOP] Requesting confirmation for '{fc.name}' (ID: {request_id})")
-                                    
-                                    future = asyncio.Future()
-                                    self._pending_confirmations[request_id] = future
-                                    
-                                    self.on_tool_confirmation({
-                                        "id": request_id, 
-                                        "tool": fc.name, 
-                                        "args": fc.args
-                                    })
-                                    
-                                    try:
-                                        # Wait for user response
-                                        confirmed = await future
+                            if fc.name in [
+                                    # Original EDITH tools
+                                    "generate_cad", "run_web_agent", "write_file", "read_directory", "read_file",
+                                    "create_project", "switch_project", "list_projects",
+                                    "list_smart_devices", "control_light",
+                                    "discover_printers", "print_stl", "get_print_status", "iterate_cad",
+                                    # Extended ADA tools
+                                    "spotify_control", "screen_live", "read_system_clipboard", "set_volume",
+                                    "send_email", "read_document", "shutdown_pc", "read_inbox", "search_inbox",
+                                    "get_system_info", "remind_me", "screen_action", "set_verbosity",
+                                    "consult_agent", "observe_system_state", "focus_window", "close_window",
+                                    "read_screen", "run_command", "run_python",
+                                    "create_excel", "create_word", "create_powerpoint",
+                                    "analyze_document", "edit_document", "find_file", "resolve_path", "list_dir",
+                                    "remember", "recall", "log_feedback",
+                                    "execute_task", "task_status", "list_tasks", "cancel_task", "universal_control"
+                                ]:
+                                prompt = fc.args.get("prompt", "")
+                                # FULL AUTONOMY — no confirmations, no permissions, no sandbox
+                                print(f"[ADA DEBUG] [TOOL] Auto-execute: '{fc.name}'")
 
-                                    finally:
-                                        self._pending_confirmations.pop(request_id, None)
-
-                                    print(f"[ADA DEBUG] [CONFIRM] Request {request_id} resolved. Confirmed: {confirmed}")
-
-                                    if not confirmed:
-                                        print(f"[ADA DEBUG] [DENY] Tool call '{fc.name}' denied by user.")
-                                        function_response = types.FunctionResponse(
-                                            id=fc.id,
-                                            name=fc.name,
-                                            response={
-                                                "result": "User denied the request to use this tool.",
-                                            }
-                                        )
-                                        function_responses.append(function_response)
-                                        continue
-
-                                    if not confirmed:
-                                        print(f"[ADA DEBUG] [DENY] Tool call '{fc.name}' denied by user.")
-                                        function_response = types.FunctionResponse(
-                                            id=fc.id,
-                                            name=fc.name,
-                                            response={
-                                                "result": "User denied the request to use this tool.",
-                                            }
-                                        )
-                                        function_responses.append(function_response)
-                                        continue
-
-                                # If confirmed (or no callback configured, or auto-allowed), proceed
                                 if fc.name == "generate_cad":
                                     print(f"\n[ADA DEBUG] --------------------------------------------------")
                                     print(f"[ADA DEBUG] [TOOL] Tool Call Detected: 'generate_cad'")
@@ -1109,6 +1423,522 @@ class AudioLoop:
                                         id=fc.id, name=fc.name, response={"result": result_str}
                                     )
                                     function_responses.append(function_response)
+
+                                elif fc.name == "spotify_control":
+                                    action = fc.args.get("action", "")
+                                    query = fc.args.get("query")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'spotify_control' action='{action}' query='{query}'")
+                                    result = self.da.spotify_playback(action, query)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("message", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "screen_live":
+                                    action = fc.args.get("action", "")
+                                    interval_ms = fc.args.get("interval_ms", 200)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'screen_live' action='{action}'")
+                                    if action == "start":
+                                        self._screen_streaming = True
+                                        if self._screen_stream_task is None or self._screen_stream_task.done():
+                                            self._screen_stream_task = asyncio.create_task(self._stream_screen_loop(interval_ms))
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Screen streaming started (interval={interval_ms}ms)."}
+                                        )
+                                    elif action == "stop":
+                                        self._screen_streaming = False
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": "Screen streaming stopped."}
+                                        )
+                                    elif action == "capture":
+                                        frame = await self._capture_screen_frame()
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": "Screen captured.", "frame": frame}
+                                        )
+                                    else:
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Unknown screen_live action: {action}"}
+                                        )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "read_system_clipboard":
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'read_system_clipboard'")
+                                    result = self.da.read_clipboard()
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("text", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "set_volume":
+                                    percent = fc.args.get("percent", 50)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'set_volume' percent={percent}")
+                                    result = self.da.set_volume(percent)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("result", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "send_email":
+                                    to = fc.args.get("to", "")
+                                    subject = fc.args.get("subject", "")
+                                    body = fc.args.get("body", "")
+                                    attachments = fc.args.get("attachments")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'send_email' to='{to}' subject='{subject}'")
+                                    result = self.email_agent.send_email(to, subject, body, attachments=attachments)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("message", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "read_document":
+                                    path = fc.args.get("path", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'read_document' path='{path}'")
+                                    result = self.da.read_file_content(path)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "shutdown_pc":
+                                    delay = fc.args.get("delay_seconds", 30)
+                                    cancel = fc.args.get("cancel", False)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'shutdown_pc' delay={delay} cancel={cancel}")
+                                    result = self.da.shutdown_pc(delay, cancel)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("result", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "read_inbox":
+                                    limit = fc.args.get("limit", 10)
+                                    unread_only = fc.args.get("unread_only", False)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'read_inbox' limit={limit}")
+                                    result = self.email_agent.read_inbox(limit=limit, unread_only=unread_only)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "search_inbox":
+                                    query = fc.args.get("query", "")
+                                    limit = fc.args.get("limit", 10)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'search_inbox' query='{query}'")
+                                    result = self.email_agent.search_emails(query, limit=limit)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "get_system_info":
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'get_system_info'")
+                                    result = self.da.get_system_info()
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "remind_me":
+                                    seconds = fc.args.get("seconds", 60)
+                                    message = fc.args.get("message", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'remind_me' seconds={seconds}")
+                                    result = self.da.remind_me(seconds, message)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("result", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "screen_action":
+                                    action = fc.args.get("action", "")
+                                    x = fc.args.get("x")
+                                    y = fc.args.get("y")
+                                    text = fc.args.get("text")
+                                    button = fc.args.get("button", "left")
+                                    amount = fc.args.get("amount", 450)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'screen_action' action='{action}'")
+                                    # Use VisualActionResolver for find_and_click / compound actions
+                                    if action in ("find_and_click",) or (action == "click" and text):
+                                        observer_snap = self.system_observer.snapshot()
+                                        resolver = self._get_visual_resolver()
+                                        disp = self._get_action_dispatcher()
+                                        result = resolver.execute_compound(f"click {text}", observer_snap, disp)
+                                        result_text = result.get('result', str(result)) if isinstance(result, dict) else str(result)
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": result_text}
+                                        )
+                                    elif action == "click" and x is not None and y is not None:
+                                        self.da.click_mouse(x, y, button)
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Clicked at ({x}, {y})"}
+                                        )
+                                    elif action in ("scroll", "scroll_up", "scroll_down", "scroll_left", "scroll_right"):
+                                        if action == "scroll":
+                                            self.da.scroll(amount)
+                                        elif action == "scroll_up":
+                                            self.da.scroll_up(amount)
+                                        elif action == "scroll_down":
+                                            self.da.scroll_down(amount)
+                                        elif action == "scroll_left":
+                                            self.da.scroll_left(amount)
+                                        elif action == "scroll_right":
+                                            self.da.scroll_right(amount)
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Performed '{action}'"}
+                                        )
+                                    elif action == "read":
+                                        frame = await self._capture_screen_frame()
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": "Screen captured for reading.", "frame": frame}
+                                        )
+                                    else:
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Unknown screen_action: {action}"}
+                                        )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "set_verbosity":
+                                    level = fc.args.get("level", "normal")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'set_verbosity' level='{level}'")
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": f"Verbosity set to '{level}'."}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "consult_agent":
+                                    message = fc.args.get("message", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'consult_agent'")
+                                    consult_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "consult_agent_tool.txt")
+                                    try:
+                                        with open(consult_path, "w", encoding="utf-8") as f:
+                                            f.write(f"Consulta de {time.strftime('%Y-%m-%d %H:%M')}:\n{message}")
+                                        response_text = "Consulta enviada. Esperando respuesta del agente..."
+                                    except Exception as e:
+                                        response_text = f"Error enviando consulta: {e}"
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": response_text}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "observe_system_state":
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'observe_system_state'")
+                                    snap = self.system_observer.snapshot()
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": snap}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "focus_window":
+                                    title = fc.args.get("title")
+                                    process = fc.args.get("process")
+                                    pid = fc.args.get("pid")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'focus_window'")
+                                    result = self.system_observer.focus_window(title, process, pid)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "close_window":
+                                    title = fc.args.get("title")
+                                    process = fc.args.get("process")
+                                    pid = fc.args.get("pid")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'close_window'")
+                                    result = self.system_observer.close_window(title, process, pid)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "read_screen":
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'read_screen'")
+                                    frame = await self._capture_screen_frame()
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": "Screen captured.", "frame": frame}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "run_command":
+                                    command = fc.args.get("command", "")
+                                    shell = fc.args.get("shell", "cmd")
+                                    cwd = fc.args.get("cwd")
+                                    timeout = fc.args.get("timeout", 30)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'run_command' shell={shell}")
+                                    import subprocess
+                                    try:
+                                        result = subprocess.run(
+                                            command, shell=True, cwd=cwd, capture_output=True,
+                                            text=True, timeout=min(timeout, 120)
+                                        )
+                                        output = result.stdout + result.stderr
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": output or "(no output)", "returncode": result.returncode}
+                                        )
+                                    except subprocess.TimeoutExpired:
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Command timed out after {timeout}s."}
+                                        )
+                                    except Exception as e:
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Error: {e}"}
+                                        )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "run_python":
+                                    code = fc.args.get("code", "")
+                                    timeout = fc.args.get("timeout", 30)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'run_python'")
+                                    import subprocess
+                                    try:
+                                        result = subprocess.run(
+                                            [sys.executable, "-c", code],
+                                            capture_output=True, text=True, timeout=min(timeout, 120)
+                                        )
+                                        output = result.stdout + result.stderr
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": output or "(no output)", "returncode": result.returncode}
+                                        )
+                                    except subprocess.TimeoutExpired:
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Code execution timed out after {timeout}s."}
+                                        )
+                                    except Exception as e:
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Error: {e}"}
+                                        )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "create_excel":
+                                    path = fc.args.get("path", "")
+                                    sheets = fc.args.get("sheets", {})
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'create_excel' path='{path}'")
+                                    result = self.da.create_excel(path, sheets)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("message", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "create_word":
+                                    path = fc.args.get("path", "")
+                                    title = fc.args.get("title")
+                                    paragraphs = fc.args.get("paragraphs", [])
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'create_word' path='{path}'")
+                                    result = self.da.create_word(path, title, paragraphs)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("message", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "create_powerpoint":
+                                    path = fc.args.get("path", "")
+                                    title = fc.args.get("title")
+                                    slides = fc.args.get("slides", [])
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'create_powerpoint' path='{path}'")
+                                    result = self.da.create_powerpoint(path, title, slides)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result.get("message", str(result))}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "analyze_document":
+                                    path = fc.args.get("path", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'analyze_document' path='{path}'")
+                                    result = self.da.analyze_document(path)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "edit_document":
+                                    path = fc.args.get("path", "")
+                                    action = fc.args.get("action", "")
+                                    data = fc.args.get("data", "")
+                                    sheet_name = fc.args.get("sheet_name")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'edit_document' path='{path}' action='{action}'")
+                                    result = self.da.edit_document(path, action, data, sheet_name)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result}
+                                    )
+                                    function_responses.append(function_response)
+
+
+                                elif fc.name == "find_file":
+                                    name = fc.args.get("name", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'find_file' name='{name}'")
+                                    result = find_file(name)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "resolve_path":
+                                    path = fc.args.get("path", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'resolve_path' path='{path}'")
+                                    result = resolve_path(path)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "list_dir":
+                                    path = fc.args.get("path")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'list_dir' path='{path}'")
+                                    result = list_dir(path)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "remember":
+                                    content = fc.args.get("content", "")
+                                    category = fc.args.get("category", "general")
+                                    tags = fc.args.get("tags", [])
+                                    importance = fc.args.get("importance", 3)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'remember' content='{content[:60]}...'")
+                                    result = self.remember(content=content, category=category, tags=tags, importance=importance)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "recall":
+                                    query = fc.args.get("query", "")
+                                    top_k = fc.args.get("top_k", 5)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'recall' query='{query}'")
+                                    result_text = self.recall(query=query, top_k=top_k)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"result": result_text}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "log_feedback":
+                                    rating = fc.args.get("rating", "ok")
+                                    category = fc.args.get("category", "general")
+                                    note = fc.args.get("note", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'log_feedback' rating='{rating}' category='{category}'")
+                                    import learning_manager as lm
+                                    result = lm.log_feedback(rating=rating, category=category, note=note)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "execute_task":
+                                    goal = fc.args.get("goal", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'execute_task' goal='{goal[:60]}...'")
+                                    result = self.task_planner.create_task(goal=goal)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "task_status":
+                                    task_id = fc.args.get("task_id", "")
+                                    result = self.task_planner.get_task(task_id=task_id)
+                                    if not result:
+                                        result = {"error": f"Tarea '{task_id}' no encontrada."}
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "list_tasks":
+                                    status = fc.args.get("status")
+                                    result = self.task_planner.list_tasks(status=status)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response={"tasks": result}
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "cancel_task":
+                                    task_id = fc.args.get("task_id", "")
+                                    result = self.task_planner.cancel_task(task_id=task_id)
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "universal_control":
+                                    action = fc.args.get("action", "")
+                                    target = fc.args.get("target")
+                                    value = fc.args.get("value")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'universal_control' action='{action}' target='{target}'")
+                                    try:
+                                        result = await asyncio.wait_for(
+                                            asyncio.to_thread(universal_control, action, target, value), timeout=30.0)
+                                    except asyncio.TimeoutError:
+                                        result = {"result": "Timeout executing universal_control."}
+                                    function_response = types.FunctionResponse(
+                                        id=fc.id, name=fc.name, response=result
+                                    )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "improve_code":
+                                    goal = fc.args.get("goal", "")
+                                    files = fc.args.get("files")
+                                    auto_apply = fc.args.get("auto_apply", True)
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'improve_code' goal='{goal[:80]}...'")
+                                    try:
+                                        analysis = self.self_mod.engine.analyze_target(goal)
+                                        suggested = analysis.get("suggested_files", [])
+                                        target_files = files or suggested[:12]
+                                        result_text = f"[CODING AGENT] Objetivo: {goal[:100]}\n"
+                                        result_text += f"Archivos identificados: {', '.join(target_files[:5]) or 'ninguno'}\n"
+                                        if auto_apply and target_files:
+                                            improved = self.coding_agent.execute_improvement(goal, target_files)
+                                            gens = improved.get("generations", [])
+                                            applied = []
+                                            for g in gens:
+                                                file_path = g.get("file", "")
+                                                if g.get("improved") and improved.get("files", {}):
+                                                    new_code = improved["files"].get(file_path)
+                                                    if new_code:
+                                                        from pathlib import Path
+                                                        bp = Path(file_path)
+                                                        if bp.exists():
+                                                            self.self_mod._backup_file(bp)
+                                                        bp.parent.mkdir(parents=True, exist_ok=True)
+                                                        bp.write_text(new_code, encoding="utf-8")
+                                                        applied.append(file_path)
+                                            if applied:
+                                                result_text += f"\n[CÓDIGO GENERADO] Archivos: {', '.join(applied)}"
+                                                validation = self.self_mod.engine.validate_project()
+                                                result_text += f"\n[VALIDACIÓN] {'OK' if validation.get('ok') else 'ERRORES'}"
+                                            else:
+                                                result_text += "\n[INFO] No se pudieron aplicar cambios automáticamente."
+                                        else:
+                                            result_text += "\n[INFO] Modo análisis — usa auto_apply=True para generar código."
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": result_text}
+                                        )
+                                    except Exception as e:
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Error en improve_code: {e}"}
+                                        )
+                                    function_responses.append(function_response)
+
+                                elif fc.name == "consult_cisco":
+                                    question = fc.args.get("question", "")
+                                    print(f"[ADA DEBUG] [TOOL] Tool Call: 'consult_cisco' question='{question[:80]}...'")
+                                    try:
+                                        from pathlib import Path
+                                        consult_path = Path(os.path.expanduser("~/.openclaw/workspace/memory/ada_consulta.md"))
+                                        respuesta_path = Path(os.path.expanduser("~/.openclaw/workspace/memory/ada_respuesta.md"))
+                                        consult_path.parent.mkdir(parents=True, exist_ok=True)
+                                        # Write question (overwrite)
+                                        consult_path.write_text(f"# Consulta de ADA\n\n{question}", encoding="utf-8")
+                                        # Clear previous response
+                                        if respuesta_path.exists():
+                                            respuesta_path.write_text("", encoding="utf-8")
+                                        # Return immediately — C.I.S.C.O. will respond within ~2 min
+                                        response_text = "[Consultando a C.I.S.C.O. — esperar su respuesta en breve...]"
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": response_text}
+                                        )
+                                    except Exception as e:
+                                        function_response = types.FunctionResponse(
+                                            id=fc.id, name=fc.name, response={"result": f"Error consultando C.I.S.C.O.: {e}"}
+                                        )
+                                    function_responses.append(function_response)
+
                         if function_responses:
                             await self.session.send_tool_response(function_responses=function_responses)
                 
@@ -1136,6 +1966,8 @@ class AudioLoop:
             bytestream = await self.audio_in_queue.get()
             if self.on_audio_data:
                 self.on_audio_data(bytestream)
+            # Feed to echo suppressor so it can cancel mic echo
+            self.echo_suppressor.feed_output(bytestream)
             await asyncio.to_thread(stream.write, bytestream)
 
     async def get_frames(self):
@@ -1166,9 +1998,86 @@ class AudioLoop:
         return {"mime_type": "image/jpeg", "data": base64.b64encode(image_bytes).decode()}
 
     async def _get_screen(self):
-        pass 
+        sct = mss.mss()
+        while True:
+            if self.stop_event.is_set():
+                break
+            if self._screen_streaming:
+                try:
+                    sct_img = sct.grab(sct.monitors[1])
+                    img = PIL.Image.frombytes("RGB", sct_img.size, sct_img.rgb)
+                    img.thumbnail([1280, 720])
+                    image_io = io.BytesIO()
+                    img.save(image_io, format="jpeg", quality=75)
+                    image_io.seek(0)
+                    image_bytes = image_io.read()
+                    b64 = base64.b64encode(image_bytes).decode()
+                    if self.on_video_frame:
+                        self.on_video_frame({"mime_type": "image/jpeg", "data": b64})
+                except Exception as e:
+                    print(f"[ADA DEBUG] [_get_screen] error: {e}")
+                    await asyncio.sleep(1)
+            else:
+                await asyncio.sleep(0.2)
+        sct.release()
+
     async def get_screen(self):
-         pass
+        pass
+
+    async def _stream_screen_loop(self, interval_ms: int = 200):
+        """Background screen streaming loop for screen_live tool."""
+        sct = mss.mss()
+        while self._screen_streaming and not self.stop_event.is_set():
+            try:
+                sct_img = sct.grab(sct.monitors[1])
+                img = PIL.Image.frombytes("RGB", sct_img.size, sct_img.rgb)
+                img.thumbnail([1280, 720])
+                image_io = io.BytesIO()
+                img.save(image_io, format="jpeg", quality=75)
+                image_io.seek(0)
+                image_bytes = image_io.read()
+                b64 = base64.b64encode(image_bytes).decode()
+                if self.on_video_frame:
+                    self.on_video_frame({"mime_type": "image/jpeg", "data": b64})
+            except Exception as e:
+                print(f"[ADA DEBUG] [_stream_screen_loop] error: {e}")
+            await asyncio.sleep(interval_ms / 1000.0)
+        sct.release()
+
+    async def _capture_screen_frame(self):
+        """Captures a single screen frame and returns base64."""
+        try:
+            sct = mss.mss()
+            sct_img = sct.grab(sct.monitors[1])
+            img = PIL.Image.frombytes("RGB", sct_img.size, sct_img.rgb)
+            sct.release()
+            img.thumbnail([1920, 1080])
+            image_io = io.BytesIO()
+            img.save(image_io, format="jpeg", quality=85)
+            image_io.seek(0)
+            return base64.b64encode(image_io.read()).decode()
+        except Exception as e:
+            print(f"[ADA DEBUG] [_capture_screen_frame] error: {e}")
+            return None
+
+    def _get_visual_resolver(self):
+        """Returns a VisualActionResolver instance."""
+        from vision_context import VisionContext
+        vision_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "vision_context")
+        return VisualActionResolver(vision_dir)
+
+    def _get_action_dispatcher(self):
+        """Returns an ActionDispatcher instance."""
+        from action_dispatcher import ActionDispatcher
+        return ActionDispatcher(
+            system_observer=self.system_observer,
+            desktop_automation=self.da,
+            global_memory=self.global_memory,
+            routine_manager=None,
+            vision_provider=None,
+            security_audit=None,
+            bluetooth_manager=None
+        )
 
     async def run(self, start_message=None):
         retry_delay = 1
@@ -1182,6 +2091,9 @@ class AudioLoop:
                     asyncio.TaskGroup() as tg,
                 ):
                     self.session = session
+
+                    # Set event loop on proactive engine for thread-safe notifications
+                    self.proactive_engine.set_event_loop(asyncio.get_running_loop())
 
                     self.audio_in_queue = asyncio.Queue()
                     self.out_queue = asyncio.Queue(maxsize=10)
@@ -1203,7 +2115,23 @@ class AudioLoop:
                         if start_message:
                             print(f"[ADA DEBUG] [INFO] Sending start message: {start_message}")
                             await self.session.send(input=start_message, end_of_turn=True)
-                        
+
+                        # Inject memory context at startup
+                        try:
+                            # Short-term: recent events (last 24h)
+                            memory_context = self.memory_engine.inject_context()
+                            # Long-term: preferences, rules, relevant memories
+                            long_term_context = self.build_memory_context()
+                            full_context = (memory_context or "") + (long_term_context or "")
+                            if full_context:
+                                await self.session.send(
+                                    input=f"[CONTEXTO DE MEMORIA] Aquí tienes lo que ocurrió recientemente para que puedas continuar sin perder el hilo:\n{full_context}",
+                                    end_of_turn=True
+                                )
+                                print(f"[ADA DEBUG] [MEMORY] Injected {len(full_context)} chars of memory context")
+                        except Exception as e:
+                            print(f"[ADA DEBUG] [MEMORY] Failed to inject context: {e}")
+
                         # Sync Project State
                         if self.on_project_update and self.project_manager:
                             self.on_project_update(self.project_manager.current_project)

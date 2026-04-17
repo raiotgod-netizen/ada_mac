@@ -1,0 +1,39 @@
+{
+  "skills": [
+    {
+      "id": "memory",
+      "name": "Memoria persistente",
+      "description": "Gestiona memoria global, runtime memory y contexto persistente.",
+      "scope": "core",
+      "enabled": true
+    },
+    {
+      "id": "desktop",
+      "name": "Control de escritorio",
+      "description": "Automatización local de mouse, teclado, ventanas y archivos.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "vision",
+      "name": "Visión contextual",
+      "description": "Resumen visual, pistas de acción y guía heurística de pantalla.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "email",
+      "name": "Correo Gmail",
+      "description": "Envío de correo, adjuntos y preparación de archivos recientes.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "improvement",
+      "name": "Auto-mejora supervisada",
+      "description": "Análisis, propuesta, validación y aplicación local de mejoras.",
+      "scope": "core",
+      "enabled": true
+    }
+  ]
+}

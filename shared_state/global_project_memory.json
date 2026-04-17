@@ -1,0 +1,215 @@
+{
+  "projects": [
+    {
+      "name": "Mark 1",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\Mark 1",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    },
+    {
+      "name": "Mejoras",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\Mejoras",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    },
+    {
+      "name": "office",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\office",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    },
+    {
+      "name": "office_test",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\office_test",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    },
+    {
+      "name": "Project_20260410_172125",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\Project_20260410_172125",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    },
+    {
+      "name": "Project_20260410_202254",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\Project_20260410_202254",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    },
+    {
+      "name": "Project_20260411_115022",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\Project_20260411_115022",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    },
+    {
+      "name": "PruebaMark1",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\PruebaMark1",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    },
+    {
+      "name": "SMAX",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\SMAX",
+      "documents": 2,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 2
+    },
+    {
+      "name": "temp",
+      "path": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2\\projects\\temp",
+      "documents": 0,
+      "screenshots": 0,
+      "cad": 0,
+      "improvements": 0
+    }
+  ],
+  "improvements": [
+    {
+      "project": "SMAX",
+      "id": "imp-0002",
+      "title": "Proceso de Mejora Continua Activo",
+      "status": "proposed",
+      "goal": "Implement continuous improvement process as requested by the user, focusing on current improvement tasks (imp-0001) and subsequent enhancements without waiting for explicit start commands, ensuring resilience and practical utility until instructed to stop.",
+      "updated_at": "2026-04-11T15:13:50.286348+00:00"
+    },
+    {
+      "project": "SMAX",
+      "id": "imp-0001",
+      "title": "Propuesta de Automejora: Expansión de Capacidades de Diagnóstico y Control de Sistema",
+      "status": "proposed",
+      "goal": "Eliminar restricciones actuales para permitir el diagnóstico completo del sistema, incluyendo la verificación de hardware como Bluetooth y otras configuraciones, con el fin de mejorar el control y la asistencia proactiva.",
+      "updated_at": "2026-04-11T05:18:07.958278+00:00"
+    }
+  ],
+  "automation_macros": [
+    {
+      "name": "buscar_en_google",
+      "description": "Enfoca la barra del navegador activo, escribe una búsqueda y la ejecuta.",
+      "steps": [
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "ctrl",
+            "l"
+          ]
+        },
+        {
+          "action": "type_text",
+          "text": "",
+          "press_enter": true
+        }
+      ]
+    },
+    {
+      "name": "abrir_youtube_busqueda",
+      "description": "Abre YouTube en el navegador predeterminado.",
+      "steps": [
+        {
+          "action": "open_url",
+          "url": "https://www.youtube.com"
+        }
+      ]
+    },
+    {
+      "name": "buscar_en_youtube_navegador_activo",
+      "description": "Enfoca la barra o caja de búsqueda y lanza una búsqueda en YouTube usando el navegador activo.",
+      "steps": [
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "ctrl",
+            "l"
+          ]
+        },
+        {
+          "action": "type_text",
+          "text": "https://www.youtube.com/results?search_query=",
+          "press_enter": false
+        }
+      ]
+    },
+    {
+      "name": "abrir_primer_resultado",
+      "description": "Navega con teclado al primer resultado visible y lo abre.",
+      "steps": [
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "tab"
+          ]
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "tab"
+          ]
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "enter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "buscar_y_abrir_primer_video_youtube",
+      "description": "Abre YouTube, busca y deja lista la apertura del primer video con navegación básica.",
+      "steps": [
+        {
+          "action": "open_url",
+          "url": "https://www.youtube.com"
+        },
+        {
+          "action": "wait",
+          "seconds": 1.5
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "/"
+          ]
+        },
+        {
+          "action": "type_text",
+          "text": "",
+          "press_enter": true
+        },
+        {
+          "action": "wait",
+          "seconds": 1.5
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "tab"
+          ]
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "enter"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "capabilities": [
+    "memoria global persistente",
+    "agent core supervisado",
+    "observación del sistema",
+    "automatización de escritorio",
+    "routines con scheduling",
+    "auditoría defensiva",
+    "visión contextual",
+    "control web local guiado",
+    "correo Gmail integrado",
+    "observación y memoria Bluetooth local",
+    "motor de auto-mejora supervisada",
+    "runner de auto-modificación local supervisada"
+  ],
+  "improvements": [
+    "arranque estable con puertos dinámicos",
+    "modo local_only en vez de degraded",
+    "lazy loading de módulos pesados",
+    "desacople de CadViewport3D",
+    "web agent view ya no interfiere automáticamente",
+    "envío de correo no bloquea el loop principal",
+    "macros web base para Google y YouTube",
+    "clic guiado por visión con confirmación",
+    "inventario Bluetooth con memoria de dispositivos conocidos",
+    "pipeline de auto-mejora con validación y registro persistente",
+    "aplicación controlada de parches locales con validación"
+  ],
+  "known_issues": [
+    "CadViewport3D sigue siendo un chunk pesado aislado",
+    "la visión guiada actual es heurística, no detección semántica completa"
+  ],
+  "policies": [
+    "acciones sensibles requieren supervisión o confirmación",
+    "no ejecutar automatización ciega de alto riesgo",
+    "preferir control local defensivo sobre acciones ofensivas"
+  ],
+  "recommended_flows": [
+    "usar macros web para búsquedas repetitivas",
+    "usar visión guiada antes de clics en web",
+    "usar routines para tareas periódicas supervisadas",
+    "usar system observer para enfocar la ventana correcta antes de automatizar",
+    "usar improvement engine para proponer, validar y registrar mejoras antes de consolidarlas"
+  ]
+}

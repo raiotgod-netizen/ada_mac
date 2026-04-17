@@ -1,0 +1,23 @@
+{
+  "entries": [
+    {
+      "rating": "good",
+      "category": "respuesta",
+      "note": "respondiste conciso",
+      "timestamp": "2026-04-17T14:17:09.464546+00:00"
+    }
+  ],
+  "stats": {
+    "good": 1,
+    "bad": 0,
+    "total": 1,
+    "by_category": {
+      "respuesta": {
+        "good": 1,
+        "bad": 0,
+        "ok": 0,
+        "total": 1
+      }
+    }
+  }
+}

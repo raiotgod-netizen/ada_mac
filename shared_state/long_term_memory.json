@@ -1,0 +1,16 @@
+{
+  "blocks": [
+    {
+      "id": "seed_language",
+      "category": "preferences",
+      "content": "ADA responde en español. El idioma principal es español.",
+      "tags": ["language", "preference"],
+      "importance": 5,
+      "created_at": 1703275200.0,
+      "last_accessed": 1703275200.0,
+      "access_count": 0,
+      "metadata": {}
+    }
+  ],
+  "_last_consolidation": 0.0
+}

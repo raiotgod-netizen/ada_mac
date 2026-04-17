@@ -1,0 +1,92 @@
+{
+  "blocks": [
+    {
+      "id": "seed_user_name",
+      "category": "user_facts",
+      "content": "El usuario se llama Diego. El creador y desarrollador de ADA. Se le llama 'Jefe' o 'Señor'.",
+      "tags": [
+        "identity",
+        "user",
+        "nombre"
+      ],
+      "importance": 5,
+      "created_at": 1776434094.0408843,
+      "last_accessed": 1776434094.040885,
+      "access_count": 0,
+      "metadata": {}
+    },
+    {
+      "id": "seed_language",
+      "category": "preferences",
+      "content": "ADA responde en español. El idioma principal es español. Estilo: directo, conciso, técnico, sin filler.",
+      "tags": [
+        "language",
+        "preference"
+      ],
+      "importance": 5,
+      "created_at": 1776434094.0408907,
+      "last_accessed": 1776434094.040891,
+      "access_count": 0,
+      "metadata": {}
+    },
+    {
+      "id": "seed_timezone",
+      "category": "user_facts",
+      "content": "Zona horaria: America/Santiago (GMT-4). Ubicación aproximada: Chile.",
+      "tags": [
+        "timezone",
+        "location"
+      ],
+      "importance": 4,
+      "created_at": 1776434094.0408938,
+      "last_accessed": 1776434094.0408938,
+      "access_count": 0,
+      "metadata": {}
+    },
+    {
+      "id": "seed_projects",
+      "category": "project_context",
+      "content": "Proyecto activo: ADA3.0 en ruta OneDrive\\Escritorio\\ADA3.0\\ada_v2. Desarrollador activo también de ADA v1 (OneDrive\\Escritorio\\ADA\\ada_v1).",
+      "tags": [
+        "proyecto",
+        "ADA",
+        "desarrollo"
+      ],
+      "importance": 5,
+      "created_at": 1776434094.0408955,
+      "last_accessed": 1776434094.0408957,
+      "access_count": 0,
+      "metadata": {}
+    },
+    {
+      "id": "seed_email",
+      "category": "user_facts",
+      "content": "Email de ADA: ada800694@gmail.com. Email del usuario (paracontextos): no registrado aún.",
+      "tags": [
+        "email",
+        "contacto"
+      ],
+      "importance": 3,
+      "created_at": 1776434094.0408974,
+      "last_accessed": 1776434094.0408978,
+      "access_count": 0,
+      "metadata": {}
+    },
+    {
+      "id": "6a5186da-b7c",
+      "category": "general",
+      "content": "El Mac está iniciando correctamente y actualmente se mantiene en espera con una carga media.",
+      "tags": [
+        "MacBook",
+        "estado",
+        "carga"
+      ],
+      "importance": 3,
+      "created_at": 1776439248.3892703,
+      "last_accessed": 1776439248.3892705,
+      "access_count": 0,
+      "metadata": {}
+    }
+  ],
+  "_last_consolidation": 0.0
+}

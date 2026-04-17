@@ -1,0 +1,26 @@
+{
+  "assistant_name": "A.D.A.",
+  "summary": [
+    "Idioma: es",
+    "Trato: señor",
+    "Reglas: 5",
+    "Memoria general y permanente habilitada"
+  ],
+  "preferences": {
+    "language": "es",
+    "address_user_as": "señor",
+    "response_style": "concisa, humana, técnica cuando haga falta",
+    "automation_level": "assistive",
+    "institutional_email": "di.hernandezp@duocuc.cl",
+    "last_email_check": "2026-04-11T05:01:00Z",
+    "api_key_status": "reset_pending",
+    "voice_profile_setup": "reset",
+    "memory_scope": "general_permanent",
+    "persist_on_shutdown": true
+  },
+  "todos": [
+    "Mantener sincronía entre ADA y OpenClaw",
+    "Usar fallback local cuando el bridge no esté disponible"
+  ],
+  "last_consolidated_at": "2026-04-12T14:32:07.250100+00:00"
+}

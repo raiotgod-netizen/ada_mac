@@ -1,0 +1,117 @@
+{
+  "projects": [],
+  "improvements": [],
+  "automation_macros": [
+    {
+      "name": "buscar_en_google",
+      "description": "Enfoca la barra del navegador activo, escribe una búsqueda y la ejecuta.",
+      "steps": [
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "ctrl",
+            "l"
+          ]
+        },
+        {
+          "action": "type_text",
+          "text": "",
+          "press_enter": true
+        }
+      ]
+    },
+    {
+      "name": "abrir_youtube_busqueda",
+      "description": "Abre YouTube en el navegador predeterminado.",
+      "steps": [
+        {
+          "action": "open_url",
+          "url": "https://www.youtube.com"
+        }
+      ]
+    },
+    {
+      "name": "buscar_en_youtube_navegador_activo",
+      "description": "Enfoca la barra o caja de búsqueda y lanza una búsqueda en YouTube usando el navegador activo.",
+      "steps": [
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "ctrl",
+            "l"
+          ]
+        },
+        {
+          "action": "type_text",
+          "text": "https://www.youtube.com/results?search_query=",
+          "press_enter": false
+        }
+      ]
+    },
+    {
+      "name": "abrir_primer_resultado",
+      "description": "Navega con teclado al primer resultado visible y lo abre.",
+      "steps": [
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "tab"
+          ]
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "tab"
+          ]
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "enter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "buscar_y_abrir_primer_video_youtube",
+      "description": "Abre YouTube, busca y deja lista la apertura del primer video con navegación básica.",
+      "steps": [
+        {
+          "action": "open_url",
+          "url": "https://www.youtube.com"
+        },
+        {
+          "action": "wait",
+          "seconds": 1.5
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "/"
+          ]
+        },
+        {
+          "action": "type_text",
+          "text": "",
+          "press_enter": true
+        },
+        {
+          "action": "wait",
+          "seconds": 1.5
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "tab"
+          ]
+        },
+        {
+          "action": "press_hotkey",
+          "keys": [
+            "enter"
+          ]
+        }
+      ]
+    }
+  ]
+}

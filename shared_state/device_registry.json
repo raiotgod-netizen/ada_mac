@@ -1,0 +1,55 @@
+{
+  "devices": [
+    {
+      "id": "builtin_mic",
+      "type": "mic",
+      "name": "Micrófono integrado",
+      "vendor": "builtin",
+      "model": "",
+      "connection": "builtin",
+      "status": "unknown",
+      "health_score": 1.0,
+      "last_seen": "",
+      "capabilities": [
+        "voice",
+        "ambient"
+      ],
+      "metadata": {
+        "default_input": true
+      }
+    },
+    {
+      "id": "builtin_speaker",
+      "type": "speaker",
+      "name": "Altavoces integrados",
+      "vendor": "builtin",
+      "model": "",
+      "connection": "builtin",
+      "status": "unknown",
+      "health_score": 1.0,
+      "last_seen": "",
+      "capabilities": [
+        "audio_output"
+      ],
+      "metadata": {
+        "default_output": true
+      }
+    },
+    {
+      "id": "builtin_camera",
+      "type": "camera",
+      "name": "Cámara web integrada",
+      "vendor": "builtin",
+      "model": "",
+      "connection": "builtin",
+      "status": "unknown",
+      "health_score": 1.0,
+      "last_seen": "",
+      "capabilities": [
+        "video",
+        "video_call"
+      ],
+      "metadata": {}
+    }
+  ]
+}

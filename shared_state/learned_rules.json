@@ -1,0 +1,14 @@
+{
+  "rules": [
+    {
+      "text": "Diego prefiere respuestas concisas y técnicas — sin 'Gran pregunta' ni filler words",
+      "source": "user",
+      "created_at": "2026-04-17T09:39:00+00:00"
+    },
+    {
+      "text": "Llamar a Diego 'Jefe' o 'Señor' — son sus preferencias",
+      "source": "user",
+      "created_at": "2026-04-17T09:39:00+00:00"
+    }
+  ]
+}

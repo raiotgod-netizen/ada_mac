@@ -1,0 +1,27 @@
+{
+  "contexts": {
+    "powershell::openclaw control y 7 p ginas m s - personal: microsoft? edge": {
+      "buscar": {
+        "query": "buscar",
+        "label": "Buscar",
+        "x": 972,
+        "y": 111,
+        "kind": "ocr_line",
+        "semantic_role": null,
+        "reason": "coincidencia textual OCR"
+      }
+    }
+  },
+  "action_outcomes": {
+    "msedge::test|google": [
+      {
+        "query": "google",
+        "x": 800,
+        "y": 100,
+        "success": true,
+        "app": "msedge",
+        "ts": 1775972059.7263856
+      }
+    ]
+  }
+}

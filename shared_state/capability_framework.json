@@ -1,0 +1,381 @@
+{
+  "skills": [
+    {
+      "id": "memory",
+      "name": "Memoria persistente",
+      "description": "Gestiona memoria global, runtime memory y contexto persistente.",
+      "scope": "core",
+      "enabled": true
+    },
+    {
+      "id": "desktop",
+      "name": "Control de escritorio",
+      "description": "Automatización local de mouse, teclado, ventanas y archivos.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "vision",
+      "name": "Visión contextual",
+      "description": "Resumen visual, pistas de acción y guía heurística de pantalla.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "email",
+      "name": "Correo Gmail",
+      "description": "Envío de correo, adjuntos y preparación de archivos recientes.",
+      "scope": "local",
+      "enabled": true
+    },
+    {
+      "id": "improvement",
+      "name": "Auto-mejora supervisada",
+      "description": "Análisis, propuesta, validación y aplicación local de mejoras.",
+      "scope": "core",
+      "enabled": true
+    }
+  ],
+  "tools": [
+    {
+      "name": "generate_cad_prototype",
+      "description": "Generates a 3D wireframe prototype based on a user's description. Use this when the user asks to visualize or prototype something in 3D.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "prompt"
+      ]
+    },
+    {
+      "name": "write_file",
+      "description": "Writes content to a file at the specified path. Overwrites if exists.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "path",
+        "content"
+      ]
+    },
+    {
+      "name": "read_directory",
+      "description": "Lists the contents of a directory.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "path"
+      ]
+    },
+    {
+      "name": "read_file",
+      "description": "Reads the content of a file.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "path"
+      ]
+    },
+    {
+      "name": "create_word_document",
+      "description": "Creates a Word .docx document on the PC.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "body",
+        "filename"
+      ]
+    },
+    {
+      "name": "create_excel_workbook",
+      "description": "Creates an Excel .xlsx workbook on the PC.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "rows_json",
+        "filename",
+        "sheet_name"
+      ]
+    },
+    {
+      "name": "create_powerpoint_presentation",
+      "description": "Creates a PowerPoint .pptx presentation on the PC.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "slides_json",
+        "filename"
+      ]
+    },
+    {
+      "name": "capture_screen_snapshot",
+      "description": "Captures a screenshot of the current screen.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "filename"
+      ]
+    },
+    {
+      "name": "observe_system_state",
+      "description": "Inspects the current desktop state, active window, open windows and browser context.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": []
+    },
+    {
+      "name": "move_mouse",
+      "description": "Moves the mouse cursor to screen coordinates.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "x",
+        "y",
+        "duration"
+      ]
+    },
+    {
+      "name": "click_mouse",
+      "description": "Executes a mouse click, optionally at coordinates.",
+      "risk": "high",
+      "enabled": true,
+      "parameters": [
+        "x",
+        "y",
+        "button",
+        "clicks"
+      ]
+    },
+    {
+      "name": "type_text",
+      "description": "Types text into the active window.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "text",
+        "interval",
+        "press_enter"
+      ]
+    },
+    {
+      "name": "press_hotkey",
+      "description": "Presses a keyboard shortcut in the active window.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "keys"
+      ]
+    },
+    {
+      "name": "scroll_desktop",
+      "description": "Scrolls in the active window.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "clicks"
+      ]
+    },
+    {
+      "name": "open_url",
+      "description": "Opens a URL in the default browser.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "url"
+      ]
+    },
+    {
+      "name": "focus_window",
+      "description": "Focuses a desktop window by title, process or pid.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "process",
+        "pid"
+      ]
+    },
+    {
+      "name": "close_window",
+      "description": "Closes a desktop window by title, process or pid.",
+      "risk": "high",
+      "enabled": true,
+      "parameters": [
+        "title",
+        "process",
+        "pid"
+      ]
+    },
+    {
+      "name": "send_email",
+      "description": "Sends an email using the configured Gmail account.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": [
+        "to",
+        "subject",
+        "body",
+        "attachments_json"
+      ]
+    },
+    {
+      "name": "shutdown_pc",
+      "description": "Schedules a PC shutdown. Use only when explicitly requested.",
+      "risk": "high",
+      "enabled": true,
+      "parameters": [
+        "confirm",
+        "delay_seconds"
+      ]
+    },
+    {
+      "name": "create_custom_script",
+      "description": "Creates a reusable custom Python script for ADA.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "name",
+        "description",
+        "content",
+        "language"
+      ]
+    },
+    {
+      "name": "run_custom_script",
+      "description": "Runs a registered custom script.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "name",
+        "args_json"
+      ]
+    },
+    {
+      "name": "list_custom_scripts",
+      "description": "Lists registered custom scripts.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": []
+    },
+    {
+      "name": "list_bluetooth_devices",
+      "description": "Lists Bluetooth adapters and known, paired or connected devices.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "scope"
+      ]
+    },
+    {
+      "name": "set_bluetooth_power",
+      "description": "Starts or stops the Windows Bluetooth service.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "enabled"
+      ]
+    },
+    {
+      "name": "open_bluetooth_settings",
+      "description": "Opens Windows Bluetooth settings.",
+      "risk": "medium",
+      "enabled": true,
+      "parameters": []
+    },
+    {
+      "name": "spotify_playback",
+      "description": "Controls Spotify or the active media session: open, play, pause, toggle, next or previous.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "action"
+      ]
+    },
+    {
+      "name": "spotify_search_and_play",
+      "description": "Opens Spotify, searches a song/artist/playlist and attempts to start playback.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "query"
+      ]
+    },
+    {
+      "name": "resolve_visual_target",
+      "description": "Finds a visible UI/text target on screen using OCR and UI detection.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "query"
+      ]
+    },
+    {
+      "name": "click_visual_target",
+      "description": "Resolves a visual target by OCR/UI and clicks it.",
+      "risk": "high",
+      "enabled": true,
+      "parameters": [
+        "query",
+        "button",
+        "clicks"
+      ]
+    },
+    {
+      "name": "type_into_visual_target",
+      "description": "Resolves a visual target, focuses it and types text.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "query",
+        "text",
+        "press_enter"
+      ]
+    },
+    {
+      "name": "visual_compound_action",
+      "description": "Resolve a visual target and act on it, optionally retrying with scroll if it is not found at first.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "query",
+        "action",
+        "text",
+        "button",
+        "clicks",
+        "press_enter",
+        "retry_scrolls",
+        "scroll_amount"
+      ]
+    },
+    {
+      "name": "run_visual_playbook",
+      "description": "Ejecuta una estrategia de playbook visual específica para la app activa (Spotify, Edge, Settings, Explorer, Discord). Detecta la app, aplica heurísticas de región y sugiere siguiente acción.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "query",
+        "strategy",
+        "confidence_threshold"
+      ]
+    },
+    {
+      "name": "read_system_clipboard",
+      "description": "Reads the current system clipboard text. Useful when the user has copied something and ADA needs to know what is on the clipboard.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": []
+    },
+    {
+      "name": "manage_automation_rules",
+      "description": "List, add, remove or toggle automation rules that react to system events (window changes, clipboard, time). Use to create rules that run automatically based on what happens on the PC.",
+      "risk": "low",
+      "enabled": true,
+      "parameters": [
+        "action",
+        "rule_id",
+        "rule_config"
+      ]
+    }
+  ]
+}

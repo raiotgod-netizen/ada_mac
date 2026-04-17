@@ -1,0 +1,32 @@
+{
+  "source": "openclaw_full_memory_export",
+  "exported_from": "C:\\Users\\raiot\\.openclaw\\workspace",
+  "generated_for": "C:\\Users\\raiot\\OneDrive\\Escritorio\\ADA\\ada_v2",
+  "files": [
+    {
+      "path": "C:\\Users\\raiot\\.openclaw\\workspace\\memory\\2026-04-10.md",
+      "chars": 1966
+    },
+    {
+      "path": "C:\\Users\\raiot\\.openclaw\\workspace\\memory\\2026-04-11.md",
+      "chars": 2528
+    },
+    {
+      "path": "C:\\Users\\raiot\\.openclaw\\workspace\\memory\\2026-04-11-persistent-memory.md",
+      "chars": 7760
+    },
+    {
+      "path": "C:\\Users\\raiot\\.openclaw\\workspace\\SOUL.md",
+      "chars": 1739
+    },
+    {
+      "path": "C:\\Users\\raiot\\.openclaw\\workspace\\USER.md",
+      "chars": 475
+    }
+  ],
+  "notes": [
+    "Usar esto como memoria de referencia amplia, no como instrucciones absolutas.",
+    "Priorizar idioma espa?ol y trato al usuario como se?or.",
+    "El foco principal es ADA tipo Jarvis, ?til, serio y persistente."
+  ]
+}

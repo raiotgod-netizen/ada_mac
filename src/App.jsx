@@ -15,10 +15,12 @@ import AuthLock from './components/AuthLock';
 import KasaWindow from './components/KasaWindow';
 import PrinterWindow from './components/PrinterWindow';
 import SettingsWindow from './components/SettingsWindow';
+import SystemWindow from './components/SystemWindow';
 
 
 
 const socket = io('http://localhost:8000');
+socket.emit('get_settings');  // Request settings on load for tool permissions
 const { ipcRenderer } = window.require('electron');
 
 function App() {
@@ -55,11 +57,17 @@ function App() {
     const [browserData, setBrowserData] = useState({ image: null, logs: [] });
     // showMemoryPrompt removed - memory is now actively saved to project
     const [confirmationRequest, setConfirmationRequest] = useState(null); // { id, tool, args }
+    const [toolPermissions, setToolPermissions] = useState({}); // tool permissions from settings
     const [kasaDevices, setKasaDevices] = useState([]);
     const [showKasaWindow, setShowKasaWindow] = useState(false);
     const [showPrinterWindow, setShowPrinterWindow] = useState(false);
     const [showCadWindow, setShowCadWindow] = useState(false);
     const [showBrowserWindow, setShowBrowserWindow] = useState(false);
+    const [showSystemWindow, setShowSystemWindow] = useState(false);
+    const [systemState, setSystemState] = useState({});
+    const [liveScreenFrame, setLiveScreenFrame] = useState(null);
+    const [screenStreamActive, setScreenStreamActive] = useState(false);
+    const [visualActionResult, setVisualActionResult] = useState(null);
 
     // Printing workflow status (for top toolbar display)
     const [slicingStatus, setSlicingStatus] = useState({ active: false, percent: 0, message: '' });
@@ -95,6 +103,7 @@ function App() {
         browser: { x: window.innerWidth / 2 - 300, y: window.innerHeight / 2 },
         kasa: { x: window.innerWidth / 2 + 350, y: window.innerHeight / 2 - 100 },
         printer: { x: window.innerWidth / 2 - 350, y: window.innerHeight / 2 - 100 },
+        system: { x: window.innerWidth / 2 + 400, y: window.innerHeight / 2 - 50 },
         tools: { x: window.innerWidth / 2, y: window.innerHeight - 100 } // Fixed bottom OFFSET
     });
 
@@ -104,6 +113,7 @@ function App() {
         tools: { w: 500, h: 80 }, // Approx
         cad: { w: 400, h: 400 },
         browser: { w: 550, h: 380 },
+        system: { w: 720, h: 540 },
         video: { w: 320, h: 180 },
         kasa: { w: 300, h: 380 }, // Approx
         printer: { w: 380, h: 380 } // Approx
@@ -426,16 +436,8 @@ function App() {
                 image: data.image,
                 logs: [...prev.logs, data.log].filter(l => l).slice(-50) // Keep last 50 logs
             }));
-            setShowBrowserWindow(true);
-            // Auto-show browser window if hidden, clamped to viewport
-            if (!elementPositions.browser) {
-                const size = { w: 550, h: 380 };
-                const clamped = clampToViewport({ x: window.innerWidth / 2 - 200, y: window.innerHeight / 2 }, size);
-                setElementPositions(prev => ({
-                    ...prev,
-                    browser: clamped
-                }));
-            }
+            // Don't auto-show — only open when user manually toggles the browser button
+            // This prevents the browser window from interrupting ADA conversations
         });
 
         // Handle streaming transcription
@@ -467,7 +469,20 @@ function App() {
         // Handle tool confirmation requests
         socket.on('tool_confirmation_request', (data) => {
             console.log("Received Confirmation Request:", data);
-            setConfirmationRequest(data);
+            // Auto-approve if tool is permitted in settings
+            if (toolPermissions[data.tool] !== false) {
+                socket.emit('confirm_tool', { id: data.id, confirmed: true });
+                console.log("Auto-approved tool:", data.tool);
+            } else {
+                setConfirmationRequest(data);
+            }
+        });
+
+        // Load tool permissions from settings
+        socket.on('settings', (settings) => {
+            if (settings && settings.tool_permissions) {
+                setToolPermissions(settings.tool_permissions);
+            }
         });
 
         // Handle Print Window Request (from CadWindow)
@@ -540,6 +555,118 @@ function App() {
             }
         });
 
+        // System Window state
+        socket.on('system_state', (data) => {
+            console.log('[SYSTEM STATE]', data);
+            setSystemState(data);
+        });
+
+        // Vision action results
+        socket.on('vision_action_result', (data) => {
+            console.log('[VISION ACTION]', data);
+            setVisualActionResult(data);
+            // Auto-clear success after 4s
+            if (data?.ok) {
+                setTimeout(() => setVisualActionResult(prev => prev === data ? null : prev), 4000);
+            }
+        });
+
+        // Skill management
+        socket.on('skill_toggled', (data) => {
+            console.log('[SKILL TOGGLED]', data);
+            socket.emit('get_system_state');
+        });
+
+        socket.on('skill_registered', (data) => {
+            console.log('[SKILL REGISTERED]', data);
+            socket.emit('get_system_state');
+        });
+
+        // Bluetooth
+        socket.on('bluetooth_devices', (devices) => {
+            console.log('[BLUETOOTH DEVICES]', devices);
+        });
+
+        socket.on('bluetooth_status', (data) => {
+            console.log('[BLUETOOTH STATUS]', data);
+        });
+
+        // Macros
+        socket.on('macro_saved', (data) => {
+            console.log('[MACRO SAVED]', data);
+        });
+
+        socket.on('global_macros', (macros) => {
+            console.log('[GLOBAL MACROS]', macros);
+        });
+
+        // Perception and desktop cognition updates from ADA's vision loop
+        socket.on('perception_update', (data) => {
+            // data contains: { available, ocr_ready, ocr_lines, text_regions, ui_targets, ocr_summary, ... }
+            setSystemState(prev => ({
+                ...prev,
+                vision: {
+                    ...prev.vision,
+                    context: {
+                        screen: {
+                            ocr_lines: data.ocr_lines || [],
+                            text_regions: data.text_regions || [],
+                            ui_targets: data.ui_targets || [],
+                            ocr_summary: data.ocr_summary || '',
+                            ocr_ready: data.ocr_ready || false,
+                        }
+                    }
+                }
+            }));
+            // Handle screen stream control from ADA
+            if (data.screen_stream_start) {
+                const interval = data.interval_ms || 200;
+                socket.emit('start_screen_stream', { interval_ms: interval });
+            }
+            if (data.screen_stream_stop) {
+                socket.emit('stop_screen_stream');
+            }
+        });
+
+        // Screen stream status updates
+        socket.on('screen_stream_status', (data) => {
+            console.log('[SCREEN STREAM STATUS]', data);
+            setScreenStreamActive(data.active);
+        });
+
+        socket.on('desktop_cognition_update', (data) => {
+            // data contains desktop cognition inference result
+            setSystemState(prev => ({
+                ...prev,
+                desktop_cognition: {
+                    ...prev.desktop_cognition,
+                    ...data,
+                }
+            }));
+        });
+
+        // Live screen frame from ADA's screen capture
+        socket.on('screen_frame', (data) => {
+            if (data && data.image) {
+                setLiveScreenFrame(data.image);
+                setScreenStreamActive(true);
+            }
+        });
+
+        // Vision action parsed (compound/conditional action parsed, not executed)
+        socket.on('vision_action_parsed', (data) => {
+            console.log('[VISION PARSED]', data);
+        });
+
+        // Visual memory for a specific app
+        socket.on('visual_memory_app', (data) => {
+            console.log('[VISUAL MEMORY APP]', data);
+        });
+
+        // Visual memory summary (all apps with memorised targets)
+        socket.on('visual_memory_summary', (data) => {
+            console.log('[VISUAL MEMORY SUMMARY]', data);
+        });
 
 
         // Get All Media Devices (Microphones, Speakers, Webcams)
@@ -1622,6 +1749,40 @@ function App() {
                     height={elementSizes.chat.h}
                     onMouseDown={(e) => handleMouseDown(e, 'chat')}
                 />
+
+                {/* System Window - Enhanced State View */}
+                {showSystemWindow && (
+                    <div
+                        id="system"
+                        className={`absolute flex flex-col transition-all duration-200 
+                        backdrop-blur-xl bg-black/40 border border-white/10 shadow-2xl overflow-hidden rounded-2xl
+                        ${activeDragElement === 'system' ? 'ring-2 ring-cyan-500 bg-cyan-500/10' : ''}
+                    `}
+                        style={{
+                            left: elementPositions.system?.x || window.innerWidth / 2 + 400,
+                            top: elementPositions.system?.y || window.innerHeight / 2 - 50,
+                            transform: 'translate(-50%, -50%)',
+                            width: `${elementSizes.system.w}px`,
+                            height: `${elementSizes.system.h}px`,
+                            pointerEvents: 'auto',
+                            zIndex: getZIndex('system')
+                        }}
+                        onMouseDown={(e) => handleMouseDown(e, 'system')}
+                    >
+                        <SystemWindow
+                            systemState={systemState}
+                            liveScreenFrame={liveScreenFrame}
+                            screenStreamActive={screenStreamActive}
+                            visualActionResult={visualActionResult}
+                            onClose={() => setShowSystemWindow(false)}
+                            onRefreshSystemState={() => socket.emit('get_system_state')}
+                            onToggleSkill={(skill_id, enabled) => socket.emit('toggle_skill', { skill_id, enabled })}
+                            onRegisterSkill={(skill) => socket.emit('register_skill', skill)}
+                            onVisualAction={(action, query) => socket.emit('run_vision_action', { action, query })}
+                            onBluetoothAction={(action) => socket.emit('run_bluetooth_action', { action })}
+                        />
+                    </div>
+                )}
 
                 {/* Footer Controls / Tools Module */}
                 <div className="z-20 flex justify-center pb-10 pointer-events-none">

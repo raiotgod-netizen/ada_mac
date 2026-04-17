@@ -1,0 +1,22 @@
+{
+  "known_devices": [
+    {
+      "name": "Bluetooth Device (Personal Area Network) #2",
+      "status": "OK",
+      "class": "Net",
+      "instance_id": "BTH\\MS_BTHPAN\\6&6B4D954&0&2"
+    },
+    {
+      "name": "Bluetooth",
+      "status": "OK",
+      "class": "SoftwareDevice",
+      "instance_id": "SWD\\RADIO\\BLUETOOTH_001A7DDA7113"
+    },
+    {
+      "name": "Bluetooth Device (Personal Area Network)",
+      "status": "Unknown",
+      "class": "Net",
+      "instance_id": "BTH\\MS_BTHPAN\\7&3487EF5C&0&2"
+    }
+  ]
+}

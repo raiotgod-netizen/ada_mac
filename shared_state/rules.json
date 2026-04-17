@@ -1,0 +1,52 @@
+{
+  "rules": [
+    {
+      "id": "clipboard_url",
+      "name": "Abrir URL del portapapeles",
+      "trigger": "clipboard_changed",
+      "trigger_config": {
+        "contains": "http"
+      },
+      "action": "notify",
+      "action_config": {
+        "message": "Detect\u00e9 una URL en el portapapeles. \u00bfAbro?"
+      },
+      "enabled": true,
+      "cooldown_sec": 60.0,
+      "description": "Cuando se copia una URL, sugiere abrirla.",
+      "last_fired": 1776001344.7939794
+    },
+    {
+      "id": "spotify_title",
+      "name": "Notificar cambio de canci\u00f3n",
+      "trigger": "window_changed",
+      "trigger_config": {
+        "process": "spotify"
+      },
+      "action": "notify",
+      "action_config": {
+        "message": "Spotify cambi\u00f3 de ventana."
+      },
+      "enabled": true,
+      "cooldown_sec": 5.0,
+      "description": "Avisa cuando Spotify est\u00e1 activa.",
+      "last_fired": 0.0
+    },
+    {
+      "id": "browser_github",
+      "name": "Detectar GitHub en navegador",
+      "trigger": "window_changed",
+      "trigger_config": {
+        "title_contains": "github"
+      },
+      "action": "log",
+      "action_config": {
+        "message": "Navegador en GitHub detectado."
+      },
+      "enabled": true,
+      "cooldown_sec": 30.0,
+      "description": "Log cuando se detecta GitHub abierto.",
+      "last_fired": 0.0
+    }
+  ]
+}

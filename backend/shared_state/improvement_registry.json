@@ -1,0 +1,25 @@
+{
+  "editable_areas": [
+    "backend",
+    "src",
+    "electron",
+    "shared_state"
+  ],
+  "protected_files": [
+    ".env",
+    "backend/identity.json"
+  ],
+  "validation_commands": [
+    "python -m py_compile backend\\server.py backend\\ada.py",
+    "npm run build"
+  ],
+  "policies": {
+    "mode": "supervised",
+    "require_confirmation_for": [
+      "security",
+      "permissions",
+      "autonomy",
+      "destructive_changes"
+    ]
+  }
+}
